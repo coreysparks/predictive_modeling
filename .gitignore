@@ -1,0 +1,27 @@
+# renv
+renv/library/
+.Rprofile
+
+# R
+.Rhistory
+.RData
+.Rds
+
+# RStudio
+.Rproj.user/
+*.Rproj
+
+# Quarto
+/_quarto/
+/site_libs/
+/.quarto/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+*.html
+*.pdf
+*.docx
+_book/
