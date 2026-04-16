@@ -172,7 +172,7 @@ The example above is a single "tree", if we did this type of analysis a large nu
 #| echo: false
 #| results: asis
 library(dplyr)
-load(url("https://github.com/coreysparks/r_courses/blob/master/prb_2008.Rdata?raw=true"))
+load(url("https://github.com/coreysparks/r_courses/raw/refs/heads/master/data/prb_2008.Rdata"))
 
 names(prb)<-tolower(names(prb))
 ```
@@ -253,7 +253,7 @@ plot(pt1); text(pt1, pretty=1)
 #Tune to find best number of variables to try
 t1<-tuneRF(y=prb2$e0total, x=prb2[,c(-12,-23)], trace=T, stepFactor = 2, ntreeTry = 1000, plot=T)
 t1
-y<-prb2$e0total[train]
+y<-prb2$e0total[train1]
 bag.2<-randomForest(y=y,x=prb2[train,c(-12,-23)],  mtry=14, ntree=500,importance=T)
 bag.2
 plot(bag.2)
