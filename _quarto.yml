@@ -1,0 +1,63 @@
+project:
+  type: book
+  output-dir: _book
+
+book:
+  title: "Predictive Modeling and Quantitative Methods in Demography"
+  author: "Corey Sparks, PhD - UTSA Department of Demography"
+  date: today
+
+  chapters:
+    - index.qmd
+    - part: "Foundations of Predictive Modeling"
+      chapters:
+        - what-is-predictive-modeling.qmd
+        - lasso.qmd
+    - part: "Classification Methods"
+      chapters:
+        - basic-classification.qmd
+        - classification-cv.qmd
+        - classification-knn.qmd
+    - part: "Unsupervised Learning"
+      chapters:
+        - clustering.qmd
+    - part: "Tree-Based and Ensemble Methods"
+      chapters:
+        - random-forests.qmd
+    - part: "Time Series and Demographic Methods"
+      chapters:
+        - time-series.qmd
+        - projection.qmd
+        - lee-carter.qmd
+
+  sidebar:
+    style: docked
+    background: light
+
+  page-footer:
+    left: |
+      Predictive Modeling and Quantitative Methods in Demography by Corey Sparks
+    right: |
+      Built with [Quarto](https://quarto.org/)
+
+  repo-url: https://github.com/coreysparks/predictive_modeling
+  repo-actions: [edit, issue]
+
+format:
+  html:
+    theme: cosmo
+    code-fold: false
+    code-tools: true
+    code-copy: true
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    number-depth: 3
+    fig-width: 8
+    fig-height: 6
+
+  pdf:
+    documentclass: book
+    toc: true
+    number-sections: true
+    colorlinks: true

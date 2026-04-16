@@ -1,0 +1,26 @@
+---
+title: "Welcome"
+---
+
+This book collects teaching materials from two workshop series developed at the UTSA Department of Demography:
+
+- **Predictive Modeling Working Group** (2019) — an informal seminar series introducing machine learning concepts and methods to demographers
+- **Summer Workshops in R and Demography** (2020) — a structured seminar series covering quantitative methods in R, from introductory topics through advanced demographic modeling
+
+## Topics Covered
+
+The book is organized into five parts:
+
+1. **Foundations** — What is predictive modeling? Regularized regression (Lasso/Ridge)
+2. **Classification** — Logistic regression, decision trees, linear discriminant analysis, cross-validation, k-nearest neighbors
+3. **Unsupervised Learning** — K-means, hierarchical clustering, model-based clustering, latent class analysis
+4. **Tree-Based Methods** — Classification and regression trees, random forests
+5. **Time Series and Demographic Methods** — Time series analysis, population projection (cohort-component, Hamilton-Perry, Leslie matrix), the Lee-Carter mortality model
+
+## Software
+
+All examples use R. Key packages include `caret`, `glmnet`, `rpart`, `randomForest`, `forecast`, `demography`, and `StMoMo`.
+
+## About the Author
+
+Corey Sparks, PhD is a Professor in the Department of Demography at the University of Texas at San Antonio (UTSA).

@@ -1,0 +1,46 @@
+project:
+  type: book
+  output-dir: _book
+
+book:
+  title: "Summer Workshops in R and Demography"
+  author: "Corey Sparks, PhD - UTSA Department of Demography"
+  date: today
+
+  chapters:
+    - index.qmd
+    - lasso.qmd
+    - clustering.qmd
+    - random-forests.qmd
+    - time-series.qmd
+    - projection.qmd
+    - lee-carter.qmd
+
+  sidebar:
+    style: docked
+    background: light
+
+  page-footer:
+    left: |
+      Summer Workshops in R and Demography by Corey Sparks
+    right: |
+      Built with [Quarto](https://quarto.org/)
+
+format:
+  html:
+    theme: cosmo
+    code-fold: false
+    code-tools: true
+    code-copy: true
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    number-depth: 3
+    fig-width: 8
+    fig-height: 6
+
+  pdf:
+    documentclass: book
+    toc: true
+    number-sections: true
+    colorlinks: true
