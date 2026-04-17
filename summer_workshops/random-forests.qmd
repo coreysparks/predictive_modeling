@@ -93,7 +93,7 @@ A nice description of these are found [here](https://towardsdatascience.com/unde
 Regression trees are a common technique used in classification problems. Regression or classification trees attempt to find optimal splits in the data so that the best classification of observations can be found. Chapter 8 of [Introduction to Statistical Learning](https://utsacloud-my.sharepoint.com/:b:/g/personal/corey_sparks_utsa_edu/EcwJ43xnPG5Jg2XquDnHdmkBPstgvNIyqTTugCfEeFGDFQ?e=SSlWyT) is a good place to start with this.
 
 Regression trees generate a set of splitting rules, which classify the data into a set of classes, based on combinations of the predictors.
-![regression partition](/home/corey/Documents/seminar/rp1.png)
+![regression partition](../predictive_workinggroup/images/rp1.png)
 
 This example, from the text, shows a 3 region partition of data on baseball hitter data. The outcome here is salary in dollars. Region 1 is players who've played less than 4.5 years, they typically have lower salary. The other 2 regions consist of players who've played longer than 4.5 years, and who have either less than 117.5 or greater than 117.5 hits. Those with more hits have higher salary than those with lower hits.
 
