@@ -357,20 +357,7 @@ rp1<-caret::train(y=y, x=x,
 
 rp1
 
-library(rpart.plot)
-library(rpart)
 plot(rp1)
-
-png("tree_plot.png", width=1600, height=900, res=120)
-prp(rp_pruned, type=4, extra=4,
-    main="Classification tree for using modern contraception")
-dev.off()
-```
-
-```{r}
-knitr::include_graphics("tree_plot.png")
-
-```
 ```{r}
 varImp(rp1)
 plot(varImp(rp1), top=10)
