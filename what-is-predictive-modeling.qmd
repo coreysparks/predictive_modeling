@@ -87,12 +87,12 @@ When we train a model, we are fitting it to the training set of our data, typica
 
 ```{r, warning=TRUE}
 library(readr)
-prb<-read_csv(file = "https://raw.githubusercontent.com/coreysparks/data/master/PRB2008_All.csv", col_types = read_rds("https://github.com/coreysparks/r_courses/raw/refs/heads/master/data/prbspec.rds"))
+prb<-read_csv(file = "https://github.com/coreysparks/r_courses/raw/refs/heads/master/data/PRB2008_All.csv", col_types = read_rds("https://github.com/coreysparks/r_courses/raw/refs/heads/master/data/prbspec.rds"))
 names(prb)<-tolower(names(prb))
 
 library(dplyr)
 prb<-prb%>%
-  mutate(africa=ifelse(continent=="Africa", 1, 0))%>%
+  mutate(africa=ifelse(=="Africa", 1, 0))%>%
   filter(complete.cases(imr, tfr, continent,percpoplt15, e0total, percurban, percmarwomcontramodern))%>%
   select(imr, tfr, continent,africa,percpoplt15, e0total, percurban, percmarwomcontramodern)
 
