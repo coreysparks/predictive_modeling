@@ -190,20 +190,32 @@ The ROC curve can be shown for the model:
 ```{r}
 
 library(pROC)
-# Select a parameter setting
-mycp<-rp1$pred$cp==rp1$bestTune$cp
-selectedIndices <- rp1$pred$cp==mycp
+# Check what columns are available in rp1$pred
+names(rp1$pred)
+rp1$bestTune
+
+# For glmnet, use lambda instead of cp
+selectedIndices <- rp1$pred$lambda == rp1$bestTune$lambda
+
+# Convert factor outcomes to numeric (0/1) for ROC curves
+rp1_obs_numeric <- ifelse(rp1$pred$obs[selectedIndices] == "Modcontra", 1, 0)
+gl1_obs_numeric <- ifelse(gl1$pred$obs == "Modcontra", 1, 0)
+
+# Check data
+table(rp1_obs_numeric)
+table(gl1_obs_numeric)
+
 # Plot:
-plot.roc(rp1$pred$obs[selectedIndices], rp1$pred$Modcontra[selectedIndices], grid=T)
-plot.roc(gl1$pred$obs, gl1$pred$Modcontra, add=T, col="blue")
+plot.roc(gl1_obs_numeric, gl1$pred$Modcontra, grid=T)
+plot.roc(rp1_obs_numeric, rp1$pred$Modcontra[selectedIndices], add=T, col="blue")
 
 #Value of ROC and AUC
-roc(rp1$pred$obs[selectedIndices],  rp1$pred$Modcontra[selectedIndices])
-roc(gl1$pred$obs, gl1$pred$Modcontra)
-auc(rp1$pred$obs[selectedIndices],  rp1$pred$Modcontra[selectedIndices])
-auc(gl1$pred$obs, gl1$pred$Modcontra)
+roc(rp1_obs_numeric,  rp1$pred$Modcontra[selectedIndices])
+roc(gl1_obs_numeric, gl1$pred$Modcontra)
+auc(rp1_obs_numeric,  rp1$pred$Modcontra[selectedIndices])
+auc(gl1_obs_numeric, gl1$pred$Modcontra)
 
-roc.test(roc(gl1$pred$obs, gl1$pred$Modcontra),roc(rp1$pred$obs[selectedIndices],  rp1$pred$Modcontra[selectedIndices]) )
+roc.test(roc(gl1_obs_numeric, gl1$pred$Modcontra),roc(rp1_obs_numeric,  rp1$pred$Modcontra[selectedIndices]) )
 ```
 
 ### Assess fit on test data

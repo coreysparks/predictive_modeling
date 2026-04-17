@@ -368,50 +368,48 @@ rmod3$beta
 
 
 ## classification results
+```{r}
+source("model_metrics.R")
+```
+
 ### Regular GLM
 ```{r}
 
 probabilities <- fm %>% predict(dtest, type = "response")
 predicted.classes <- ifelse(probabilities > mean(dtest$modcontra, na.rm=T), 1, 0)
-# Prediction accuracy
 observed.classes <- dtest$modcontra
-mean(predicted.classes == observed.classes, na.rm=T)
-table(predicted.classes, observed.classes)
+conf_table <- table(predicted.classes, observed.classes)
+classify_metrics(conf_table)
 ```
 
 ### stepwise logistic model
 ```{r}
 probabilities <- predict(smod, dtest, type = "response")
 predicted.classes <- ifelse(probabilities > mean(dtest$modcontra, na.rm=T), 1, 0)
-# Prediction accuracy
 observed.classes <- dtest$modcontra
-mean(predicted.classes == observed.classes)
-table(predicted.classes, observed.classes)
+conf_table <- table(predicted.classes, observed.classes)
+classify_metrics(conf_table)
 ```
 
 ### Logistic ridge regression
 ```{r}
 x.test <- model.matrix(~factor(region)+factor(age)+livchildren+rural+wantmore+factor(educ)+partnered+work+factor(wealth), data=dtest)
 x.test<-(x.test)[,-1]
-ytest<-dtrain$modcontra
 
 probabilities <-   predict(object=rmod1, newx = x.test, s=s1$lambda.1se, type="response")
 predicted.classes <- ifelse(probabilities > mean(dtest$modcontra), 1,0)
-# Model accuracy
 observed.classes <- dtest$modcontra
-mean(predicted.classes == observed.classes)
-table(predicted.classes, observed.classes)
+conf_table <- table(predicted.classes, observed.classes)
+classify_metrics(conf_table)
 ```
 
 ### Logistic Lasso
 ```{r}
-
 probabilities <-   predict(object=rmod3, newx = x.test, s=s2$lambda.1se, type="response")
 predicted.classes <- ifelse(probabilities > mean(dtest$modcontra), 1,0)
-# Model accuracy
 observed.classes <- dtest$modcontra
-mean(predicted.classes == observed.classes)
-table(predicted.classes, observed.classes)
+conf_table <- table(predicted.classes, observed.classes)
+classify_metrics(conf_table)
 ```
 
 ### So what?
