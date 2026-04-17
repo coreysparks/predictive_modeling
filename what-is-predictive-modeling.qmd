@@ -87,7 +87,7 @@ When we train a model, we are fitting it to the training set of our data, typica
 
 ```{r, warning=TRUE}
 library(readr)
-prb<-read_csv(file = "https://raw.githubusercontent.com/coreysparks/data/master/PRB2008_All.csv", col_types = read_rds("https://raw.githubusercontent.com/coreysparks/r_courses/master/prbspec.rds"))
+prb<-read_csv(file = "https://raw.githubusercontent.com/coreysparks/data/master/PRB2008_All.csv", col_types = read_rds("https://github.com/coreysparks/r_courses/raw/refs/heads/master/data/prbspec.rds"))
 names(prb)<-tolower(names(prb))
 
 library(dplyr)
