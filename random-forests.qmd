@@ -375,6 +375,58 @@ prp(rp_pruned, type=4, extra=4, main="Classification tree for using modern contr
 plot(varImp(rp1), top=10)
 ```
 
+### SHAP values for random forest model
+
+SHAP (SHapley Additive exPlanations) values provide a unified measure of feature importance that shows how much each predictor contributes to an individual prediction, and in which direction.
+
+```{r}
+#| fig-width: 8
+#| fig-height: 6
+#| message: false
+#| warning: false
+library(fastshap)
+library(ggplot2)
+
+# Prediction wrapper for fastshap
+pfun <- function(object, newdata) {
+  predict(object, newdata = newdata, type = "prob")[, "mod"]
+}
+
+# Compute SHAP values on training data (subset for speed)
+set.seed(1115)
+shap_vals <- explain(
+  object    = rp1,
+  X         = x,
+  pred_wrapper = pfun,
+  nsim      = 50,
+  adjust    = TRUE
+)
+
+# Mean absolute SHAP — overall feature importance
+shap_imp <- data.frame(
+  feature    = colnames(x),
+  mean_shap  = colMeans(abs(shap_vals))
+)
+shap_imp <- shap_imp[order(shap_imp$mean_shap, decreasing = TRUE), ]
+
+ggplot(head(shap_imp, 15), aes(x = reorder(feature, mean_shap), y = mean_shap)) +
+  geom_col(fill = "steelblue") +
+  coord_flip() +
+  labs(title = "Mean |SHAP| — top 15 features",
+       x = NULL, y = "Mean absolute SHAP value") +
+  theme_bw()
+```
+
+```{r}
+#| fig-width: 8
+#| fig-height: 6
+# SHAP beeswarm plot (shows direction of effect)
+library(shapviz)
+
+sv <- shapviz(shap_vals, X = x)
+sv_importance(sv, kind = "beeswarm", max_display = 15)
+```
+
 ```{r}
 ##Accuracy on training set
 pred1<-predict(rp1, newdata=x)
