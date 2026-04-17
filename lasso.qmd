@@ -189,7 +189,7 @@ An important note about the ridge regression is that no coefficients are forced 
 ## Lasso
 ```{r}
 #| out-width: 600px
-knitr::include_graphics("/media/corey/extra/predictive_workinggroup/images/cowboy.jpeg")
+knitr::include_graphics("predictive_workinggroup/images/cowboy.jpeg")
 ```
 
 What is the Lasso? Lasso is short for *least absolute shrinkage and selection operator*. It is designed so that it produces a model that is both strong in the prediction sense, and parsimonious, in that it performs feature (variable) selection as well.
