@@ -358,8 +358,20 @@ rp1<-caret::train(y=y, x=x,
 rp1
 
 plot(rp1)
+
+library(rpart)
+library(rpart.plot)
+
+rp_vis <- rpart(y ~ ., data = data.frame(x, y), method = "class")
+rp_pruned <- prune(rp_vis, cp = rp_vis$cptable[which.min(rp_vis$cptable[,"xerror"]), "CP"])
+prp(rp_pruned, type=4, extra=4, main="Classification tree for using modern contraception")
+
+
+```
+
+
 ```{r}
-varImp(rp1)
+
 plot(varImp(rp1), top=10)
 ```
 
