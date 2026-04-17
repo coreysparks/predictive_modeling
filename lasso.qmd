@@ -123,7 +123,7 @@ Variable selection methods are one way to approach finding the most parsimonious
 
 ```{r}
 #| out-width: 600px
-knitr::include_graphics("/media/corey/extra/predictive_workinggroup/images/shrink2.gif")
+knitr::include_graphics("predictive_workinggroup/images/shrink2.gif")
 ```
 
 As opposed to the variable selection methods, shrinkage models fit a model that contains all the predictors in the data, and constrains or regularizes the coefficients so that they shrink towards 0, effectively eliminating the unnecessary parameters from the model.
