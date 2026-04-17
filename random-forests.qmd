@@ -254,7 +254,7 @@ plot(pt1); text(pt1, pretty=1)
 t1<-tuneRF(y=prb2$e0total, x=prb2[,c(-12,-23)], trace=T, stepFactor = 2, ntreeTry = 1000, plot=T)
 t1
 y<-prb2$e0total[train1]
-bag.2<-randomForest(y=y,x=prb2[train,c(-12,-23)],  mtry=14, ntree=500,importance=T)
+bag.2<-randomForest(y=y,x=prb2[train1,c(-12,-23)],  mtry=14, ntree=500,importance=T)
 bag.2
 plot(bag.2)
 importance(bag.2,scale = T )
