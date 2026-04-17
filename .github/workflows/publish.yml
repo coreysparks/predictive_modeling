@@ -29,6 +29,7 @@ jobs:
       - name: Restore renv environment
         run: |
           install.packages("renv")
+          options(repos = c(CRAN = "https://cloud.r-project.org"))
           renv::restore()
         shell: Rscript {0}
 
