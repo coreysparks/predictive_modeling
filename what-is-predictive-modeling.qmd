@@ -92,7 +92,7 @@ names(prb)<-tolower(names(prb))
 
 library(dplyr)
 prb<-prb%>%
-  mutate(africa=ifelse(=="Africa", 1, 0))%>%
+  mutate(africa=ifelse(continent=="Africa", 1, 0))%>%
   filter(complete.cases(imr, tfr, continent,percpoplt15, e0total, percurban, percmarwomcontramodern))%>%
   select(imr, tfr, continent,africa,percpoplt15, e0total, percurban, percmarwomcontramodern)
 
