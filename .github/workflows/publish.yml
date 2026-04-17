@@ -25,23 +25,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev libharfbuzz-dev libfribidi-dev
 
-      - name: Set up R dependencies cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.R_LIBS_USER }}
-          key: r-${{ hashFiles('DESCRIPTION') }}-${{ hashFiles('.github/r-packages.txt') }}
-          restore-keys: r-
-
-      - name: Install R packages
+      - name: Restore renv environment
         run: |
-          install.packages(c(
-            "knitr", "rmarkdown", "dplyr", "ggplot2", "readr",
-            "haven", "caret", "glmnet", "rpart", "rpart.plot",
-            "MASS", "pROC", "randomForest", "cluster", "mclust",
-            "poLCA", "factoextra", "forecast", "tseries",
-            "demography", "StMoMo", "HMDHFDplus",
-            "tidyr", "tibble", "scales"
-          ), repos = "https://cloud.r-project.org")
+          install.packages("renv")
+          renv::restore()
         shell: Rscript {0}
 
       - name: Set up Quarto
