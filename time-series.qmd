@@ -26,9 +26,9 @@ In these examples, we will use both simulated and real data. Data come from two 
 
 ```{r}
 #unemployment
-load(url("https://github.com/coreysparks/r_courses/blob/master/bls_unemp.Rdata?raw=true"))
+load(url("https://github.com/coreysparks/r_courses/raw/refs/heads/master/data/bls_unemp.Rdata"))
 #air quality
-load(url("https://github.com/coreysparks/r_courses/blob/master/bexar_air.Rdata?raw=true"))
+load(url("https://github.com/coreysparks/r_courses/raw/refs/heads/master/data/bexar_air.Rdata"))
 
 ```
 

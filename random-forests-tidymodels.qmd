@@ -1,0 +1,659 @@
+# Demography Informal Methods Seminar - Classification and Regression Trees (tidymodels)
+
+```{r}
+#| include: false
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Classification models
+
+I would suggest you read section 5.1 of [Introduction to Statistical Learning](https://utsacloud-my.sharepoint.com/:b:/g/personal/corey_sparks_utsa_edu/EcwJ43xnPG5Jg2XquDnHdmkBPstgvNIyqTTugCfEeFGDFQ?e=SSlWyT) to get a full treatment of this topic
+
+In classification methods, we are typically interested in using some observed characteristics of a case to predict a binary categorical outcome. This can be extended to a multi-category outcome, but the largest number of applications involve a 1/0 outcome.
+
+In these examples, we will use the Demographic and Health Survey [Model Data](https://dhsprogram.com/data/Model-Datasets.cfm). These are based on the DHS survey, but are publicly available and are used to practice using the DHS data sets, but don't represent a real country.
+
+In this example, we will use the outcome of contraceptive choice (modern vs other/none) as our outcome.
+
+```{r}
+library(haven)
+dat <- url("https://github.com/coreysparks/data/blob/master/ZZIR62FL.DTA?raw=true")
+model.dat <- read_dta(dat)
+```
+
+Here we recode some of our variables and limit our data to those women who are not currently pregnant and who are sexually active.
+
+```{r}
+library(dplyr)
+
+model.dat2 <- model.dat %>%
+  mutate(
+    region      = v024,
+    modcontra   = ifelse(v364 == 1, 1, 0),
+    age         = cut(v012, breaks = 5),
+    livchildren = v218,
+    educ        = v106,
+    currpreg    = v213,
+    wealth      = as.factor(v190),
+    partnered   = ifelse(v701 <= 1, 0, 1),
+    work        = ifelse(v731 %in% c(0, 1), 0, 1),
+    knowmodern  = ifelse(v301 == 3, 1, 0),
+    age2        = v012^2,
+    rural       = ifelse(v025 == 2, 1, 0),
+    wantmore    = ifelse(v605 %in% c(1, 2), 1, 0)
+  ) %>%
+  filter(currpreg == 0, v536 > 0, v701 != 9) %>%
+  dplyr::select(caseid, region, modcontra, age, age2, livchildren, educ,
+                knowmodern, rural, wantmore, partnered, wealth, work)
+```
+
+```{r}
+#| results: asis
+knitr::kable(head(model.dat2))
+```
+
+
+## Cross-validation of predictive models
+
+The term [cross-validation](https://www.cs.cmu.edu/~schneide/tut5/node42.html) refers to fitting a model on a subset of data and then testing it on another subset of the data. Typically this process is repeated several times.
+
+**K-fold** cross-validation is a process where you leave out a "group" of observations, it is as follows:
+
+1. Randomize the data
+2. Split the data into k groups, where k is an integer
+3. For each of the k groups,
+    + Take one of the groups as a hold out test set
+    + Use the other k-1 groups as training data
+    + Fit a model using the data on the k-1 groups, and test it on the hold out group
+    + Measure predictive accuracy of that model, and **throw the model away!**
+4. Summarize the model accuracy over the measured model accuracy metrics
+
+
+## Alternative accuracy measures
+
+The Receiver Operating Characteristics (**ROC**) curve is a probability curve commonly used with the area under the curve (**AUC**) measure to summarize the separability of the classes. The higher the AUC, the better the model is at distinguishing between classes.
+
+
+## Simple regression tree example
+
+### Hitters data
+
+```{r}
+#| fig-width: 7
+#| fig-height: 5
+#| message: false
+#| warning: false
+library(tidymodels)
+library(rpart.plot)
+data(Hitters, package = "ISLR")
+
+# Fit a single rpart tree for visualization
+hitters_clean <- Hitters %>% filter(!is.na(Salary))
+
+hitters_rec <- recipe(Salary ~ Years + Hits, data = hitters_clean)
+
+hitters_spec <- decision_tree(cost_complexity = tune(), tree_depth = tune()) %>%
+  set_engine("rpart") %>%
+  set_mode("regression")
+
+hitters_wf <- workflow(hitters_rec, hitters_spec)
+
+# Quick visualization with a fixed tree (depth = 3)
+hitters_vis_spec <- decision_tree(tree_depth = 3) %>%
+  set_engine("rpart") %>%
+  set_mode("regression")
+
+hitters_vis_fit <- workflow(hitters_rec, hitters_vis_spec) %>%
+  fit(hitters_clean)
+
+prp(extract_fit_engine(hitters_vis_fit), type = 4, extra = 1,
+    main = "Regression tree: Salary ~ Years + Hits")
+```
+
+Cross-validate to find the best cost-complexity (tree size):
+
+```{r}
+#| fig-width: 6
+#| fig-height: 4
+#| warning: false
+set.seed(1115)
+hitters_folds <- vfold_cv(hitters_clean, v = 10)
+
+hitters_grid <- grid_regular(
+  cost_complexity(range = c(-4, -1)),
+  tree_depth(range = c(1, 6)),
+  levels = 5
+)
+
+hitters_res <- tune_grid(hitters_wf, resamples = hitters_folds,
+                         grid = hitters_grid, metrics = metric_set(rmse))
+
+autoplot(hitters_res)
+```
+
+Prune to best tree and display:
+
+```{r}
+#| fig-width: 7
+#| fig-height: 5
+best_hitters <- select_best(hitters_res, metric = "rmse")
+
+hitters_final <- finalize_workflow(hitters_wf, best_hitters) %>%
+  fit(hitters_clean)
+
+prp(extract_fit_engine(hitters_final), type = 4, extra = 1,
+    main = "Pruned regression tree")
+```
+
+Single prediction example — player with 6 years experience and 200 hits:
+
+```{r}
+new <- data.frame(Hits = 200, Years = 6)
+predict(hitters_final, new_data = new)
+```
+
+
+## PRB data — regression tree and random forest
+
+```{r}
+#| echo: false
+#| results: asis
+#| message: false
+library(dplyr)
+load(url("https://github.com/coreysparks/r_courses/raw/refs/heads/master/data/prb_2008.Rdata"))
+names(prb) <- tolower(names(prb))
+```
+
+```{r}
+#| results: hide
+#| message: false
+#| echo: false
+library(mice)
+prb2 <- prb %>%
+  dplyr::select(-y, -x, -id, -country, -region, -year, -e0male, -e0female,
+                -popdenspersqmile, -percpop1549hivaids2001,
+                -projectedpopmid2025, -projectedpopmid2050,
+                -projectedpopchange_08_50perc)
+imps  <- mice(m = 10, data = prb2)
+prb2  <- complete(imps)
+```
+
+### Simple regression tree — PRB data
+
+```{r}
+#| fig-width: 7
+#| fig-height: 6
+#| warning: false
+#| message: false
+set.seed(1115)
+prb_split <- initial_split(prb2 %>% dplyr::select(-lowe0), prop = 0.75)
+prb_train <- training(prb_split)
+prb_test  <- testing(prb_split)
+
+prb_rec  <- recipe(e0total ~ ., data = prb_train)
+
+prb_tree_spec <- decision_tree(tree_depth = 7) %>%
+  set_engine("rpart") %>%
+  set_mode("regression")
+
+prb_tree_fit <- workflow(prb_rec, prb_tree_spec) %>%
+  fit(prb_train)
+
+prp(extract_fit_engine(prb_tree_fit), type = 4, extra = 1,
+    main = "Regression tree: e0total")
+```
+
+### Bagged regression tree — PRB data
+
+```{r}
+#| fig-width: 7
+#| fig-height: 6
+#| message: false
+#| warning: false
+library(baguette)
+
+prb_bag_spec <- bag_tree(min_n = 5) %>%
+  set_engine("rpart", times = 100) %>%
+  set_mode("regression")
+
+prb_bag_fit <- workflow(prb_rec, prb_bag_spec) %>%
+  fit(prb_train)
+
+prb_bag_fit
+```
+
+### Random forest — PRB data
+
+```{r}
+#| fig-width: 7
+#| fig-height: 6
+#| message: false
+#| warning: false
+library(ranger)
+
+prb_rf_spec <- rand_forest(mtry = tune(), trees = 500) %>%
+  set_engine("ranger", importance = "impurity") %>%
+  set_mode("regression")
+
+prb_rf_wf <- workflow(prb_rec, prb_rf_spec)
+
+set.seed(1115)
+prb_folds <- vfold_cv(prb_train, v = 5)
+
+prb_rf_res <- tune_grid(
+  prb_rf_wf,
+  resamples = prb_folds,
+  grid      = grid_regular(mtry(range = c(2, 14)), levels = 7),
+  metrics   = metric_set(rmse)
+)
+
+autoplot(prb_rf_res)
+```
+
+```{r}
+#| fig-width: 7
+#| fig-height: 6
+best_prb_rf  <- select_best(prb_rf_res, metric = "rmse")
+prb_rf_final <- finalize_workflow(prb_rf_wf, best_prb_rf) %>%
+  fit(prb_train)
+
+# Variable importance
+library(vip)
+vip(prb_rf_final, num_features = 10)
+```
+
+### Classification tree — low vs high life expectancy
+
+```{r}
+#| fig-width: 7
+#| fig-height: 6
+#| warning: false
+#| message: false
+prb2_cls <- prb2 %>%
+  mutate(lowe0 = as.factor(ifelse(e0total < median(e0total), "low", "high")))
+
+set.seed(1115)
+prb_cls_split <- initial_split(prb2_cls %>% dplyr::select(-e0total), prop = 0.75)
+prb_cls_train <- training(prb_cls_split)
+prb_cls_test  <- testing(prb_cls_split)
+
+prb_cls_rec <- recipe(lowe0 ~ ., data = prb_cls_train)
+
+prb_cls_spec <- decision_tree(cost_complexity = tune()) %>%
+  set_engine("rpart") %>%
+  set_mode("classification")
+
+prb_cls_wf <- workflow(prb_cls_rec, prb_cls_spec)
+
+set.seed(1115)
+prb_cls_folds <- vfold_cv(prb_cls_train, v = 10)
+
+prb_cls_res <- tune_grid(
+  prb_cls_wf,
+  resamples = prb_cls_folds,
+  grid      = grid_regular(cost_complexity(range = c(-4, -1)), levels = 10),
+  metrics   = metric_set(accuracy, roc_auc)
+)
+
+best_cp <- select_best(prb_cls_res, metric = "accuracy")
+
+prb_cls_final <- finalize_workflow(prb_cls_wf, best_cp) %>%
+  fit(prb_cls_train)
+
+prp(extract_fit_engine(prb_cls_final), type = 4, extra = 4,
+    main = "Classification tree: low vs high life expectancy")
+```
+
+### Random forest classification — PRB low life expectancy
+
+```{r}
+#| fig-width: 7
+#| fig-height: 6
+prb_rf_cls_spec <- rand_forest(mtry = tune(), trees = 500) %>%
+  set_engine("ranger", importance = "impurity") %>%
+  set_mode("classification")
+
+prb_rf_cls_wf <- workflow(prb_cls_rec, prb_rf_cls_spec)
+
+set.seed(1115)
+prb_rf_cls_res <- tune_grid(
+  prb_rf_cls_wf,
+  resamples = prb_cls_folds,
+  grid      = grid_regular(mtry(range = c(2, 14)), levels = 7),
+  metrics   = metric_set(accuracy, roc_auc)
+)
+
+best_prb_rf_cls  <- select_best(prb_rf_cls_res, metric = "roc_auc")
+prb_rf_cls_final <- finalize_workflow(prb_rf_cls_wf, best_prb_rf_cls) %>%
+  fit(prb_cls_train)
+
+# Accuracy on test set
+prb_cls_preds <- predict(prb_rf_cls_final, prb_cls_test) %>%
+  bind_cols(prb_cls_test %>% dplyr::select(lowe0))
+
+accuracy(prb_cls_preds, truth = lowe0, estimate = .pred_class)
+conf_mat(prb_cls_preds, truth = lowe0, estimate = .pred_class)
+
+vip(prb_rf_cls_final, num_features = 10)
+```
+
+
+## More complicated example — DHS contraception data
+
+### Train / test split
+
+We use an 80% training fraction.
+
+```{r}
+#| message: false
+#| warning: false
+library(tidymodels)
+set.seed(1115)
+
+model.dat2 <- model.dat2 %>%
+  mutate(modcontra = as.factor(ifelse(modcontra == 1, "mod", "notmod")))
+
+contra_split <- initial_split(model.dat2 %>% dplyr::select(-caseid),
+                              prop = 0.80, strata = modcontra)
+dtrain <- training(contra_split)
+dtest  <- testing(contra_split)
+
+prop.table(table(dtrain$modcontra))
+prop.table(table(dtest$modcontra))
+```
+
+### Recipe — preprocessing
+
+The recipe replaces the manual `model.matrix()` call from the original analysis. We one-hot encode factor predictors, then center and scale all numeric predictors.
+
+```{r}
+contra_rec <- recipe(modcontra ~ region + age + age2 + livchildren + educ +
+                       knowmodern + rural + wantmore + partnered + wealth + work,
+                     data = dtrain) %>%
+  step_dummy(all_nominal_predictors(), one_hot = TRUE) %>%
+  step_zv(all_predictors()) %>%
+  step_normalize(all_numeric_predictors())
+
+contra_rec
+```
+
+### Resampling — repeated 5-fold CV with downsampling
+
+```{r}
+#| message: false
+library(themis)
+
+set.seed(1115)
+contra_folds <- vfold_cv(dtrain, v = 5, repeats = 5, strata = modcontra)
+
+# Add downsampling inside the recipe to handle class imbalance
+contra_rec_ds <- contra_rec %>%
+  step_downsample(modcontra, under_ratio = 1, seed = 1115)
+```
+
+### Model specifications
+
+```{r}
+# Classification tree (rpart)
+ct_spec <- decision_tree(cost_complexity = tune()) %>%
+  set_engine("rpart") %>%
+  set_mode("classification")
+
+# Bagged tree
+bt_spec <- bag_tree(min_n = tune()) %>%
+  set_engine("rpart", times = 50) %>%
+  set_mode("classification")
+
+# Random forest
+rf_spec <- rand_forest(mtry = tune(), trees = 500) %>%
+  set_engine("ranger", importance = "impurity") %>%
+  set_mode("classification")
+```
+
+### Workflows
+
+```{r}
+ct_wf <- workflow(contra_rec_ds, ct_spec)
+bt_wf <- workflow(contra_rec_ds, bt_spec)
+rf_wf <- workflow(contra_rec_ds, rf_spec)
+```
+
+### Train classification tree (rp1 equivalent)
+
+```{r}
+#| fig-width: 8
+#| fig-height: 6
+#| message: false
+#| warning: false
+ct_grid <- grid_regular(cost_complexity(range = c(-4, -1)), levels = 5)
+
+set.seed(1115)
+rp1 <- tune_grid(
+  ct_wf,
+  resamples = contra_folds,
+  grid      = ct_grid,
+  metrics   = metric_set(roc_auc, accuracy)
+)
+
+autoplot(rp1)
+```
+
+```{r}
+#| fig-width: 8
+#| fig-height: 6
+best_ct <- select_best(rp1, metric = "roc_auc")
+ct_final <- finalize_workflow(ct_wf, best_ct) %>% fit(dtrain)
+
+prp(extract_fit_engine(ct_final), type = 4, extra = 4,
+    main = "Classification tree for using modern contraception")
+```
+
+```{r}
+#| fig-width: 7
+#| fig-height: 5
+vip(ct_final, num_features = 10, geom = "col")
+```
+
+#### SHAP values for classification tree model
+
+SHAP (SHapley Additive exPlanations) values show how much each predictor contributes to an individual prediction and in which direction.
+
+```{r}
+#| fig-width: 8
+#| fig-height: 6
+#| message: false
+#| warning: false
+library(fastshap)
+library(shapviz)
+
+x_train <- bake(prep(contra_rec), new_data = dtrain) %>%
+  dplyr::select(-modcontra)
+
+pfun_ct <- function(object, newdata) {
+  predict(object, new_data = newdata, type = "prob")$.pred_mod
+}
+
+set.seed(1115)
+shap_ct <- explain(
+  object       = ct_final,
+  X            = x_train,
+  pred_wrapper = pfun_ct,
+  nsim         = 50,
+  adjust       = TRUE
+)
+
+sv_ct <- shapviz(shap_ct, X = x_train)
+sv_importance(sv_ct, kind = "beeswarm", max_display = 15)
+```
+
+```{r}
+sv_importance(sv_ct, kind = "bar", max_display = 15) +
+  labs(title = "Mean |SHAP| — classification tree, top 15 features")
+```
+
+### Train/evaluate each model — training set metrics
+
+```{r}
+#| message: false
+# Helper that computes the same metrics as the original classify_metrics()
+tidy_metrics <- function(preds_tbl, truth_col = "modcontra") {
+  truth_sym <- sym(truth_col)
+  bind_rows(
+    accuracy(preds_tbl,   truth = !!truth_sym, estimate = .pred_class),
+    sens(preds_tbl,       truth = !!truth_sym, estimate = .pred_class, event_level = "first"),
+    spec(preds_tbl,       truth = !!truth_sym, estimate = .pred_class, event_level = "first"),
+    precision(preds_tbl,  truth = !!truth_sym, estimate = .pred_class, event_level = "first"),
+    f_meas(preds_tbl,     truth = !!truth_sym, estimate = .pred_class, event_level = "first")
+  )
+}
+```
+
+```{r}
+##  Classification tree — train accuracy
+ct_train_preds <- predict(ct_final, dtrain) %>%
+  bind_cols(dtrain %>% dplyr::select(modcontra))
+
+conf_mat(ct_train_preds, truth = modcontra, estimate = .pred_class)
+tidy_metrics(ct_train_preds)
+```
+
+```{r}
+## Classification tree — test accuracy
+ct_test_preds <- predict(ct_final, dtest) %>%
+  bind_cols(dtest %>% dplyr::select(modcontra))
+
+conf_mat(ct_test_preds, truth = modcontra, estimate = .pred_class)
+tidy_metrics(ct_test_preds)
+```
+
+### Train bagged tree model
+
+```{r}
+#| message: false
+#| warning: false
+bt_grid <- data.frame(min_n = c(2, 5, 10, 20))
+
+set.seed(1115)
+bt_res <- tune_grid(
+  bt_wf,
+  resamples = contra_folds,
+  grid      = bt_grid,
+  metrics   = metric_set(roc_auc, accuracy)
+)
+
+best_bt <- select_best(bt_res, metric = "roc_auc")
+bt_final <- finalize_workflow(bt_wf, best_bt) %>% fit(dtrain)
+
+bt_final
+vip(bt_final, num_features = 10, geom = "col")
+```
+
+```{r}
+## Bagged tree — train accuracy
+bt_train_preds <- predict(bt_final, dtrain) %>%
+  bind_cols(dtrain %>% dplyr::select(modcontra))
+
+conf_mat(bt_train_preds, truth = modcontra, estimate = .pred_class)
+tidy_metrics(bt_train_preds)
+
+## Bagged tree — test accuracy
+bt_test_preds <- predict(bt_final, dtest) %>%
+  bind_cols(dtest %>% dplyr::select(modcontra))
+
+conf_mat(bt_test_preds, truth = modcontra, estimate = .pred_class)
+tidy_metrics(bt_test_preds)
+```
+
+### Train random forest model
+
+```{r}
+#| message: false
+#| warning: false
+set.seed(1115)
+rf_res <- tune_grid(
+  rf_wf,
+  resamples = contra_folds,
+  grid      = grid_regular(mtry(range = c(2, 20)), levels = 7),
+  metrics   = metric_set(roc_auc, accuracy)
+)
+
+autoplot(rf_res)
+```
+
+```{r}
+best_rf  <- select_best(rf_res, metric = "roc_auc")
+rf_final <- finalize_workflow(rf_wf, best_rf) %>% fit(dtrain)
+
+rf_final
+
+vip(rf_final, num_features = 10, geom = "col")
+```
+
+```{r}
+## Random forest — train accuracy
+rf_train_preds <- predict(rf_final, dtrain) %>%
+  bind_cols(dtrain %>% dplyr::select(modcontra))
+
+conf_mat(rf_train_preds, truth = modcontra, estimate = .pred_class)
+tidy_metrics(rf_train_preds)
+
+## Random forest — test accuracy
+rf_test_preds <- predict(rf_final, dtest) %>%
+  bind_cols(dtest %>% dplyr::select(modcontra))
+
+conf_mat(rf_test_preds, truth = modcontra, estimate = .pred_class)
+tidy_metrics(rf_test_preds)
+```
+
+We see that by down-sampling the more common level of the outcome, we end up with much more balanced accuracy in terms of specificity and sensitivity.
+
+### ROC curve
+
+```{r}
+#| fig-width: 7
+#| fig-height: 5
+library(pROC)
+
+rf_test_prob <- predict(rf_final, dtest, type = "prob") %>%
+  bind_cols(dtest %>% dplyr::select(modcontra))
+
+roc_obj <- roc(
+  response  = rf_test_prob$modcontra,
+  predictor = rf_test_prob$.pred_mod,
+  levels    = c("notmod", "mod")
+)
+
+plot.roc(roc_obj, grid = TRUE,
+         main = paste0("ROC — random forest  (AUC = ", round(auc(roc_obj), 3), ")"))
+
+auc(roc_obj)
+```
+
+### SHAP values for random forest model
+
+```{r}
+#| fig-width: 8
+#| fig-height: 6
+#| message: false
+#| warning: false
+pfun_rf <- function(object, newdata) {
+  predict(object, new_data = newdata, type = "prob")$.pred_mod
+}
+
+set.seed(1115)
+shap_rf <- explain(
+  object       = rf_final,
+  X            = x_train,
+  pred_wrapper = pfun_rf,
+  nsim         = 50,
+  adjust       = TRUE
+)
+
+sv_rf <- shapviz(shap_rf, X = x_train)
+sv_importance(sv_rf, kind = "beeswarm", max_display = 15)
+```
+
+```{r}
+sv_importance(sv_rf, kind = "bar", max_display = 15) +
+  labs(title = "Mean |SHAP| — random forest, top 15 features")
+```
