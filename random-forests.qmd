@@ -432,7 +432,7 @@ sv_importance(sv, kind = "beeswarm", max_display = 15)
 pred1<-predict(rp1, newdata=x)
 confusionMatrix(data = pred1,reference = y, positive = "mod" )
 
-source('model_metrics.r')
+source('model_metrics.R')
 
 predt1<-predict(rp1, newdata=xtest)
 confusionMatrix(data = predt1, yt, positive = "mod" )
