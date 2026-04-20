@@ -23,6 +23,8 @@ packages <- c(
   "tree",            # Classification and regression trees
   "randomForest",    # Random forests
   "rattle",          # GUI for data mining (includes fancyRpartPlot)
+  "fastshap",        # SHAP values for any ML model
+  "shapviz",         # SHAP visualization
 
   # Performance evaluation
   "pROC",            # ROC curves and AUC
