@@ -109,6 +109,7 @@ abline(h=0, lty=2)
 Often in time series data, we will have a noisy series, meaning that there is an underlying signal that we want to describe, but there is random white noise that accompanies it. Below, we simulate a cosine curve and add a small amount and a large amount of noise to  it. With a small amount of noise, the signal is still visible, but with a large amount of random variation, the signal becomes almost indiscernible.
 
 ```{r}
+#| fig.height: 7
 t<-1:200
 c<-2*cos(2*pi*t/50)
 w<-rnorm(200)
