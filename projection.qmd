@@ -1,3 +1,7 @@
+---
+title: "Population Projection and the Lee-Carter Model"
+---
+
 # Demography Informal Methods Seminar - Population Projection and the Lee-Carter Model
 
 ## Population Projection
@@ -8,13 +12,16 @@
 
 ### Methods
  * Cohort component method
-  + $$P_{t+n} = P_t + B_t - D_t + M_t$$
-  + [Example](https://www.measureevaluation.org/resources/training/online-courses-and-resources/non-certificate-courses-and-mini-tutorials/population-analysis-for-planners/lesson-8/lesson-8-the-cohort-component-population-projection-method)
+ $P_{t+n} = P_t + B_t - D_t + M_t$
+
+ [Example](https://www.measureevaluation.org/resources/training/online-courses-and-resources/non-certificate-courses-and-mini-tutorials/population-analysis-for-planners/lesson-8/lesson-8-the-cohort-component-population-projection-method)
 
  * Hamilton-Perry method
   + Very low data requirements
   + Uses cohort change ratios from two previous censuses to project the population forward
-  + $$P_{t+n} = CCR_{t, t-n} * P_t$$
+
+ $P_{t+n} = CCR_{t, t-n} * P_t$
+
   Where the $CCR$ is the ratio of the population age structure at the two previous censuses.
   + Good description is [here](https://demographics.coopercenter.org/sites/demographics/files/2019-08/VAPopProj%20Methodology_2019_Updated.pdf) and [here](https://demographics.texas.gov/Resources/Presentations/ADC/2014/ADC2014_2C_Swanson.pdf)
   + Original article [here](https://utsacloud-my.sharepoint.com/:b:/g/personal/corey_sparks_utsa_edu/EVRxaOrCh21FikL16bWklzkBJly961agP92K5j2JKvk-qA?e=a1eBaT)
@@ -24,7 +31,7 @@
   + People reproduce at specific ages after surviving to that age
   + Very thorough treatment in [Keyfitz and Caswell, 2005, Chapters 3, 7 and 9](https://utsacloud-my.sharepoint.com/:b:/g/personal/corey_sparks_utsa_edu/EYFWQYGEoXBCukP3O75Xj1kBBmnky2P9hLFbzCbWFZ-EOQ?e=DapuF5)
 
-$$\begin{pmatrix}
+$\begin{pmatrix}
 n_1\\
 n_2\\
 n_3
@@ -38,10 +45,10 @@ P_1 & 0 & 0\\
 n_1\\
 n_2\\
 n_3
-\end{pmatrix}(t)$$
+\end{pmatrix}(t)$
 
 Or as:
-$$n(t+1) = \mathbf{A} n(t)$$
+$n(t+1) = \mathbf{A} n(t)$
 
 $n_k$ are the population sizes, $F_k$ are the reproductive values at each age, and $P_k$ are the survivorship ratios at each age
 
@@ -73,12 +80,12 @@ The human mortality and human fertility databases are excellent sources for nati
 
 ```{r}
 #| echo: false
-mypassword="1429845433"
-myusername="corey.sparks@utsa.edu"
+mypassword="UJY.uxu9yam0rqn1cbh"
+myusername="corey.sparks.utsa@gmail.com"
 ```
 
 ```{r}
-UShmd<- readHMDweb(CNTRY = "USA", item ="fltper_5x5", password =mypassword,username = myusername)
+UShmd<- readHMDweb(CNTRY = "USA", item ="fltper_5x5",fixup=T, password =mypassword,username = myusername)
 #49 for item, 51 for US
 
 us_mort<-UShmd%>%
@@ -95,7 +102,7 @@ head(us_mort)
 
 ```{r}
 #| echo: false
-myotherpassword="47515"
+myotherpassword="bwa7vku9RME8paw_bdp"
 ```
 
 Fertility data are by single year of age, so I aggregate to 5 year intervals
@@ -125,7 +132,12 @@ head(us_dem)
 ```
 
 ```{r}
-ggplot(us_dem)+geom_line( aes(x=Age, y=asfr5), color="red")+geom_line( aes(x=Age, y=qx), color="blue")+xlim(0, 110)+ylab("Rate")+xlab("Age")+theme_minimal()
+ggplot(us_dem)+
+     geom_line( aes(x=Age, y=asfr5), color="red")+
+     geom_line( aes(x=Age, y=qx), color="blue")+
+     xlim(0, 110)+ylab("Rate")+
+     xlab("Age")+
+     theme_minimal()
 
 ```
 

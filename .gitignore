@@ -25,3 +25,5 @@ Thumbs.db
 *.pdf
 *.docx
 _book/
+
+**/*.quarto_ipynb
