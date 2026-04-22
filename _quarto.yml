@@ -27,8 +27,6 @@ book:
     - part: "Time Series and Demographic Methods"
       chapters:
         - time-series.qmd
-        - projection.qmd
-        - lee-carter.qmd
 
   sidebar:
     style: docked
