@@ -54,8 +54,3 @@ format:
     fig-width: 8
     fig-height: 6
 
-  pdf:
-    documentclass: book
-    toc: true
-    number-sections: true
-    colorlinks: true
