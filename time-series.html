@@ -1,0 +1,2129 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>9&nbsp; Demography Informal Methods Seminar - Introduction to Time Series Analysis – Predictive Modeling and Quantitative Methods in Demography</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./random-forests.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-6f4dde0c9b9e53d219e3db410911c9dc.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar docked quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./time-series.html">Time Series and Demographic Methods</a></li><li class="breadcrumb-item"><a href="./time-series.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Demography Informal Methods Seminar - Introduction to Time Series Analysis</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Predictive Modeling and Quantitative Methods in Demography</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/coreysparks/predictive_modeling" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Welcome</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Foundations of Predictive Modeling</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./what-is-predictive-modeling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">What is Predictive Modeling?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lasso.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Demography Informal Methods Seminar - Lasso and Regularized Regression</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Classification Methods</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./basic-classification.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Basic Methods for Classification</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./classification-cv.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Classification and Cross-Validation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./classification-knn.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Classification with K-Nearest Neighbors</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Unsupervised Learning</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./clustering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Predictive Modeling - Cluster analysis</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Tree-Based and Ensemble Methods</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./random-forests.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Demography Informal Methods Seminar - Classification and Regression Trees</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">Time Series and Demographic Methods</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./time-series.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Demography Informal Methods Seminar - Introduction to Time Series Analysis</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#time-series-analysis" id="toc-time-series-analysis" class="nav-link active" data-scroll-target="#time-series-analysis"><span class="header-section-number">9.1</span> Time Series Analysis</a>
+  <ul class="collapse">
+  <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data"><span class="header-section-number">9.1.1</span> Data</a></li>
+  <li><a href="#libraries" id="toc-libraries" class="nav-link" data-scroll-target="#libraries"><span class="header-section-number">9.1.2</span> Libraries</a></li>
+  </ul></li>
+  <li><a href="#time-series-data" id="toc-time-series-data" class="nav-link" data-scroll-target="#time-series-data"><span class="header-section-number">9.2</span> Time series data</a>
+  <ul class="collapse">
+  <li><a href="#more-fake-data---random-walk-with-drift" id="toc-more-fake-data---random-walk-with-drift" class="nav-link" data-scroll-target="#more-fake-data---random-walk-with-drift"><span class="header-section-number">9.2.1</span> More fake data - Random walk with drift</a></li>
+  <li><a href="#signal-and-noise" id="toc-signal-and-noise" class="nav-link" data-scroll-target="#signal-and-noise"><span class="header-section-number">9.2.2</span> Signal and Noise</a></li>
+  <li><a href="#some-terminology" id="toc-some-terminology" class="nav-link" data-scroll-target="#some-terminology"><span class="header-section-number">9.2.3</span> Some terminology</a></li>
+  <li><a href="#auto-correlation-in-time-series" id="toc-auto-correlation-in-time-series" class="nav-link" data-scroll-target="#auto-correlation-in-time-series"><span class="header-section-number">9.2.4</span> Auto-correlation in Time Series</a></li>
+  <li><a href="#stationary-time-series" id="toc-stationary-time-series" class="nav-link" data-scroll-target="#stationary-time-series"><span class="header-section-number">9.2.5</span> Stationary Time Series</a></li>
+  <li><a href="#non-stationary-time-series" id="toc-non-stationary-time-series" class="nav-link" data-scroll-target="#non-stationary-time-series"><span class="header-section-number">9.2.6</span> Non-stationary time series</a></li>
+  <li><a href="#removing-trend-in-a-series" id="toc-removing-trend-in-a-series" class="nav-link" data-scroll-target="#removing-trend-in-a-series"><span class="header-section-number">9.2.7</span> Removing trend in a series</a></li>
+  <li><a href="#differencing-a-time-series" id="toc-differencing-a-time-series" class="nav-link" data-scroll-target="#differencing-a-time-series"><span class="header-section-number">9.2.8</span> Differencing a time series</a></li>
+  </ul></li>
+  <li><a href="#smoothing-a-time-series" id="toc-smoothing-a-time-series" class="nav-link" data-scroll-target="#smoothing-a-time-series"><span class="header-section-number">9.3</span> Smoothing a time series</a>
+  <ul class="collapse">
+  <li><a href="#moving-average-of-time-series" id="toc-moving-average-of-time-series" class="nav-link" data-scroll-target="#moving-average-of-time-series"><span class="header-section-number">9.3.1</span> Moving Average of Time Series</a></li>
+  </ul></li>
+  <li><a href="#arima-models" id="toc-arima-models" class="nav-link" data-scroll-target="#arima-models"><span class="header-section-number">9.4</span> ARIMA Models</a>
+  <ul class="collapse">
+  <li><a href="#arima-models-1" id="toc-arima-models-1" class="nav-link" data-scroll-target="#arima-models-1"><span class="header-section-number">9.4.1</span> ARIMA models</a></li>
+  </ul></li>
+  <li><a href="#forecasting" id="toc-forecasting" class="nav-link" data-scroll-target="#forecasting"><span class="header-section-number">9.5</span> Forecasting</a></li>
+  <li><a href="#arima-forecasting" id="toc-arima-forecasting" class="nav-link" data-scroll-target="#arima-forecasting"><span class="header-section-number">9.6</span> ARIMA forecasting</a></li>
+  <li><a href="#classical-decomposition" id="toc-classical-decomposition" class="nav-link" data-scroll-target="#classical-decomposition"><span class="header-section-number">9.7</span> Classical Decomposition</a>
+  <ul class="collapse">
+  <li><a href="#seasonal-adjustment" id="toc-seasonal-adjustment" class="nav-link" data-scroll-target="#seasonal-adjustment"><span class="header-section-number">9.7.1</span> Seasonal adjustment</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/coreysparks/predictive_modeling/edit/main/time-series.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/coreysparks/predictive_modeling/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./time-series.html">Time Series and Demographic Methods</a></li><li class="breadcrumb-item"><a href="./time-series.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Demography Informal Methods Seminar - Introduction to Time Series Analysis</span></a></li></ol></nav>
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Demography Informal Methods Seminar - Introduction to Time Series Analysis</span></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="time-series-analysis" class="level2" data-number="9.1">
+<h2 data-number="9.1" class="anchored" data-anchor-id="time-series-analysis"><span class="header-section-number">9.1</span> Time Series Analysis</h2>
+<p>I would suggest you read chapters 1 through 3 of <a href="https://utsacloud-my.sharepoint.com/:b:/g/personal/corey_sparks_utsa_edu/Ear7EgBI0FVJmN-GhNqe0mIBNI5bNdB5QVZzeY2M1dnZUg?e=cA8e68">Time Series Analysis and Its Applications 4th ed</a> to get a introductory treatment of this topic.</p>
+<p>I also strongly urge you to check out <a href="https://otexts.com/fpp2/">Rob Hyndman’s book on forecasting</a>, which is free.</p>
+<p>In time series analysis, we are typically interested in describing the pattern of variation of a variable over time. This can be extended to include multiple variables, but the largest number of applications involve a single variable.</p>
+<p>Time series data are very different from other data you may have encountered. These are <em>NOT</em> the same as longitudinal data, nor are they the same as event history data. Sometimes these terms are thrown around as if they are the same, but they are not. Time series data are collected on a very regular basis, such as every minute, day, week, month, etc, and are typically measured for a long period of time, often years.</p>
+<p>Much of time series analysis is descriptive, in that we are wanting to describe a few basic qualities of a time series.</p>
+<p>In these examples, we will use both simulated and real data. Data come from two sources: - <a href="https://www.bls.gov/webapps/legacy/cpsatab1.htm">BLS monthly unemployment rates</a> - <a href="https://aqs.epa.gov/aqsweb/airdata/download_files.html#Daily">Daily air quality for Bexar County</a></p>
+<section id="data" class="level3" data-number="9.1.1">
+<h3 data-number="9.1.1" class="anchored" data-anchor-id="data"><span class="header-section-number">9.1.1</span> Data</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#unemployment</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="fu">url</span>(<span class="st">"https://github.com/coreysparks/r_courses/raw/refs/heads/master/data/bls_unemp.Rdata"</span>))</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">#air quality</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="fu">url</span>(<span class="st">"https://github.com/coreysparks/r_courses/raw/refs/heads/master/data/bexar_air.Rdata"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="libraries" class="level3" data-number="9.1.2">
+<h3 data-number="9.1.2" class="anchored" data-anchor-id="libraries"><span class="header-section-number">9.1.2</span> Libraries</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'dplyr'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:stats':
+
+    filter, lag</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggfortify)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(forecast)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Registered S3 methods overwritten by 'forecast':
+  method                 from     
+  autoplot.Arima         ggfortify
+  autoplot.acf           ggfortify
+  autoplot.ar            ggfortify
+  autoplot.bats          ggfortify
+  autoplot.decomposed.ts ggfortify
+  autoplot.ets           ggfortify
+  autoplot.forecast      ggfortify
+  autoplot.stl           ggfortify
+  autoplot.ts            ggfortify
+  fitted.ar              ggfortify
+  fortify.ts             ggfortify
+  residuals.ar           ggfortify</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="time-series-data" class="level2" data-number="9.2">
+<h2 data-number="9.2" class="anchored" data-anchor-id="time-series-data"><span class="header-section-number">9.2</span> Time series data</h2>
+<section id="air-quality-data" class="level4">
+<h4 class="anchored" data-anchor-id="air-quality-data">Air quality data</h4>
+<p>These are daily data, which start at January 1, 2019. We tell R these are daily data by stating that the frequency is 365 (days)</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">#daily Air quality index from January 1, 2019 - March 31, 2020</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>ts1<span class="ot">&lt;-</span><span class="fu">ts</span>(bexar<span class="sc">$</span>AQI, <span class="at">frequency =</span> <span class="dv">365</span>, <span class="at">start=</span><span class="fu">c</span>(<span class="dv">2019</span>,<span class="dv">1</span>))</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(ts1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Time Series:
+Start = c(2019, 1) 
+End = c(2020, 91) 
+Frequency = 365 
+  [1] 106  53  32  38  52  41  41  45  35  42  31  42  39  58  55  28  33  30
+ [19]  39  39  43  28  35  40  40  38  45  35  35  28  34  35  40  52  50  10
+ [37]  28  47  49  52  55  14  23  23  38  56  61  53  56  19  23  34  41  35
+ [55]  35  31  20  29  41  45  45  59  63  20  28  30  46  35  45  54  51  54
+ [73]  59  60  52  46  50  54  67  25  20  38  56  61  67  71  63  48  46  60
+ [91]  29 169  24  26  44  64  43  48  48  34  42  36  31  30  54  58  61  28
+[109]  53  29  34  43  36  35  39  38  42  43  41  36  34  37  38  46  55  72
+[127]  77  75  47  28  39  27  49  37  41  50  66  65  51  38  29  43  39  58
+[145]  44  44  44  44  52  56  63  75  31  34  40  45  43  32  46  62  58  54
+[163]  46 139  44  43  47  52  55  64  67  71  50  43  50  50  54  51  44  37
+[181]  43  42  67  41  52  65  77  47  58 100  67  51  58  44  51  64  44  64
+[199]  45  48  80  46  42  65  39  50  61  77  44  59  68  64  53  37  49  64
+[217]  43  59  48  74  28  27  38  47  53  53  49  56  75  81  71  58  97  68
+[235]  53  53  50  52  54  61  66  54  39  31  33  30  36  51  77 119  61  46
+[253]  45  61 126  64  45  52  64  51  55  70  63  58  56  59  45  70  71  66
+[271]  84  41  61  35  62  74  57  51  48  51  72  54  48  51  47  49  64  41
+[289]  36  34  44  61  65  48  49  61 119 119  90  62  53  58  66  53  67  64
+[307]  48  54  48  58  60  51  52  43  44  44  50  54  80  54  59  51  78  65
+[325]  47  42  52  60  67  57  51  49  48  37  50  52  49  48  39  74  61  35
+[343]  35  42  37  43  50  67  52  54  44  57  55  35  40  37  43  36  46  47
+[361]  58  37  36  40  35  45  41  43  50  74  44  74  49  31  31  37  43  53
+[379]  35  33  42  58  46  54  45  46  48  35  30  54  51  39  20  19  28  41
+[397]  60  61  45  38  34  34  24  50  57  24  31  27  45  53  70  73  55  57
+[415]  36  36  19  38  45  52  71  31  52  53  51  35  37  43  54  65  41  63
+[433]  70  68  24  33  47  43  71  77  40  36  41  50  34  50  60  60  77  83
+[451]  32  35  27  42  44  59</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ts1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="time-series_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>bexar, <span class="fu">aes</span>(<span class="at">x=</span>date, <span class="at">y=</span>AQI))<span class="sc">+</span><span class="fu">geom_line</span>()<span class="sc">+</span><span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Bexar County, TX - Air Quality Index"</span>,<span class="at">subtitle =</span> <span class="st">"January 2019 to March 2020"</span>,</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>       <span class="at">caption =</span> <span class="st">"Source: EPA Air Data </span><span class="sc">\n</span><span class="st"> Calculations by Corey S. Sparks, Ph.D."</span>,</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Date"</span>,</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"AQI"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="time-series_files/figure-html/unnamed-chunk-4-2.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>bexar<span class="sc">%&gt;%</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(date, AQI)<span class="sc">%&gt;%</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="at">n=</span><span class="dv">10</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         date AQI
+1  2020-01-01 106
+2  2020-01-02  53
+3  2020-01-03  32
+4  2020-01-04  38
+5  2020-01-05  52
+6  2020-01-06  41
+7  2020-01-07  41
+8  2020-01-08  45
+9  2020-01-09  35
+10 2020-01-10  42</code></pre>
+</div>
+</div>
+</section>
+<section id="bls-unemployment-data" class="level4">
+<h4 class="anchored" data-anchor-id="bls-unemployment-data">BLS Unemployment data</h4>
+<p>This data set is a time series of monthly unemployment rates from 2000 to 2020. These data are Monthly, so we tell R that their frequency is 12 months (every month is repeated every 12 observations), with start and end dates of January 2000 and June 2020</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Montly unemployment Rate from January 2000 - June, 2020</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>unemp<span class="ot">&lt;-</span>unemp[unemp<span class="sc">$</span>Series.ID<span class="sc">==</span><span class="st">"LNU04000000"</span>,]</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>unemp<span class="ot">&lt;-</span> <span class="fu">t</span>(unemp[<span class="sc">-</span><span class="dv">1</span>])</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>unemp<span class="ot">&lt;-</span>unemp[<span class="fu">is.na</span>(unemp)<span class="sc">==</span>F]</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>ts2<span class="ot">&lt;-</span><span class="fu">ts</span>(unemp, <span class="at">start=</span><span class="fu">c</span>(<span class="dv">2000</span>,<span class="dv">1</span>), <span class="at">end=</span><span class="fu">c</span>(<span class="dv">2020</span>,<span class="dv">6</span>), <span class="at">freq=</span><span class="dv">12</span>)</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggfortify)</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(ts2)<span class="sc">+</span><span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"US Monthly Unemployment Rate"</span>,<span class="at">subtitle =</span> <span class="st">"January 2000 to June 2020"</span>,</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">caption =</span> <span class="st">"Source: EPA Air Data </span><span class="sc">\n</span><span class="st"> Calculations by Corey S. Sparks, Ph.D."</span>,</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Date"</span>,</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Unemployment Rate"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="time-series_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>unemp2<span class="ot">&lt;-</span><span class="fu">data.frame</span>(<span class="at">rate=</span>unemp, <span class="at">date=</span><span class="fu">seq</span>(<span class="at">from=</span><span class="fu">as.Date</span>(<span class="st">"2000-01-01"</span>), <span class="at">to=</span><span class="fu">as.Date</span>(<span class="st">"2020-06-01"</span>), <span class="at">by=</span><span class="st">"months"</span>))</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(unemp2, <span class="at">n=</span><span class="dv">10</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   rate       date
+1   4.5 2000-01-01
+2   4.4 2000-02-01
+3   4.3 2000-03-01
+4   3.7 2000-04-01
+5   3.8 2000-05-01
+6   4.1 2000-06-01
+7   4.2 2000-07-01
+8   4.1 2000-08-01
+9   3.8 2000-09-01
+10  3.6 2000-10-01</code></pre>
+</div>
+</div>
+</section>
+<section id="fake-data-example---white-noise" class="level4">
+<h4 class="anchored" data-anchor-id="fake-data-example---white-noise">Fake data example - White noise</h4>
+<p>White noise can be though of as a random variable with no discernible trend or pattern to them. They are typically thought of as a random Gaussian variable. If we did a histogram of it, it would be a nice, pretty mound shaped, symmetric distribution.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1115</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>x<span class="ot">&lt;-</span><span class="fu">rnorm</span>(<span class="dv">200</span>)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x, <span class="at">type=</span><span class="st">"l"</span>, <span class="at">main=</span><span class="st">"White Noise"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="time-series_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="more-fake-data---random-walk-with-drift" class="level3" data-number="9.2.1">
+<h3 data-number="9.2.1" class="anchored" data-anchor-id="more-fake-data---random-walk-with-drift"><span class="header-section-number">9.2.1</span> More fake data - Random walk with drift</h3>
+<p>Another type of random pattern are random walks. These are cumulative sums of random variables. They can increase or decrease over time, but they are only doing so based on recent previous events and their values.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>w<span class="ot">&lt;-</span><span class="fu">rnorm</span>(<span class="dv">200</span>); x<span class="ot">=</span><span class="fu">cumsum</span>(w)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>wd<span class="ot">&lt;-</span> w<span class="fl">+.2</span>; xd<span class="ot">=</span><span class="fu">cumsum</span>(wd)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot.ts</span>(xd, <span class="at">main =</span> <span class="st">"Random Walk with Drift"</span>, <span class="at">col=</span><span class="dv">2</span>, <span class="at">ylim=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">30</span>, <span class="dv">40</span>))</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(x, <span class="at">col=</span><span class="dv">1</span>)</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h=</span><span class="dv">0</span>, <span class="at">lty=</span><span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="time-series_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="signal-and-noise" class="level3" data-number="9.2.2">
+<h3 data-number="9.2.2" class="anchored" data-anchor-id="signal-and-noise"><span class="header-section-number">9.2.2</span> Signal and Noise</h3>
+<p>Often in time series data, we will have a noisy series, meaning that there is an underlying signal that we want to describe, but there is random white noise that accompanies it. Below, we simulate a cosine curve and add a small amount and a large amount of noise to it. With a small amount of noise, the signal is still visible, but with a large amount of random variation, the signal becomes almost indiscernible.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>t<span class="ot">&lt;-</span><span class="dv">1</span><span class="sc">:</span><span class="dv">200</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>c<span class="ot">&lt;-</span><span class="dv">2</span><span class="sc">*</span><span class="fu">cos</span>(<span class="dv">2</span><span class="sc">*</span>pi<span class="sc">*</span>t<span class="sc">/</span><span class="dv">50</span>)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>w<span class="ot">&lt;-</span><span class="fu">rnorm</span>(<span class="dv">200</span>)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>ts3<span class="ot">&lt;-</span><span class="fu">ts</span>(c<span class="sc">+</span>w)</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">1</span>))</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plot.ts</span>(c, <span class="at">main=</span><span class="st">"signal"</span>)</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot.ts</span>(c<span class="sc">+</span>w, <span class="at">main=</span><span class="st">"signal+ low noise"</span>)</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="fu">plot.ts</span>(c<span class="sc">+</span><span class="dv">5</span><span class="sc">*</span>w,  <span class="at">main=</span><span class="st">"signal + large noise"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="time-series_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="some-terminology" class="level3" data-number="9.2.3">
+<h3 data-number="9.2.3" class="anchored" data-anchor-id="some-terminology"><span class="header-section-number">9.2.3</span> Some terminology</h3>
+<ul>
+<li>lag = a value of the time series that occurs at some regular interval before the current value. For example, if this is our series:</li>
+</ul>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>x1<span class="ot">&lt;-</span><span class="fu">rnorm</span>(<span class="dv">10</span>)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>x1</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1]  0.76023965  0.11379658  1.81570396 -0.59960278  0.07340230  0.30721595
+ [7] -0.09357193 -1.83498487  0.44271755  0.05858398</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">lag</span>(x1, <span class="dv">1</span>) <span class="co">#first lag</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1]          NA  0.76023965  0.11379658  1.81570396 -0.59960278  0.07340230
+ [7]  0.30721595 -0.09357193 -1.83498487  0.44271755</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">lag</span>(x1, <span class="dv">5</span>) <span class="co">#fifth lag</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1]         NA         NA         NA         NA         NA  0.7602397
+ [7]  0.1137966  1.8157040 -0.5996028  0.0734023</code></pre>
+</div>
+</div>
+<ul>
+<li>Trend = increase or decrease in the mean of a variable, often over the long term. For example, this variable should have no trend:</li>
+</ul>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>x2<span class="ot">&lt;-</span><span class="fu">rnorm</span>(<span class="dv">20</span>)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x2)</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">ksmooth</span>(<span class="at">y=</span>x2,<span class="at">x=</span><span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(x2), <span class="st">"normal"</span>, <span class="at">bandwidth=</span><span class="dv">5</span>), <span class="at">col=</span><span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="time-series_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>While this one increases over time:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>b0<span class="ot">&lt;-</span><span class="dv">0</span>; b1<span class="ot">=</span>.<span class="dv">5</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>t<span class="ot">&lt;-</span><span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">100</span>, <span class="dv">1</span>)</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>x3<span class="ot">&lt;-</span><span class="fu">rnorm</span>(<span class="dv">100</span>, b0<span class="sc">+</span>b1<span class="sc">*</span>t, <span class="dv">5</span>)</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>tx3<span class="ot">&lt;-</span><span class="fu">ts</span>(x3)</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(tx3)</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">coef=</span><span class="fu">coef</span>(<span class="fu">lm</span>(x3<span class="sc">~</span>t)), <span class="at">col=</span><span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="time-series_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>Seasonality = This is a regular pattern of variation in a time series. It is a patter that repeats (like the cosine wave above) at a regular pattern within the data.</li>
+</ul>
+</section>
+<section id="auto-correlation-in-time-series" class="level3" data-number="9.2.4">
+<h3 data-number="9.2.4" class="anchored" data-anchor-id="auto-correlation-in-time-series"><span class="header-section-number">9.2.4</span> Auto-correlation in Time Series</h3>
+<p>Auto-correlation of a time series is <span class="math inline">\(\gamma (h)\)</span> measures how correlated a time series is with different lags of itself.</p>
+<p><span class="math display">\[\gamma (h) = E[(x_{t+h} - \mu)(x_t - \mu)\]</span></p>
+<p><span class="math display">\[\rho(h) = \frac{\gamma(t+h,t)}{\sqrt{\gamma(t+h,t+h)\gamma(t,t) )}} = \frac{\gamma(h)}{\gamma(0)}\]</span></p>
+<p>shows the correlation of a variable with itself at a given time lag <span class="math inline">\(h\)</span>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(ts1, <span class="at">main=</span><span class="st">"ACF of Air Quality Data"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="time-series_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(ts2, <span class="at">main=</span><span class="st">"ACF of Unemployment Data"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="time-series_files/figure-html/unnamed-chunk-12-2.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(ts3, <span class="at">main=</span><span class="st">"ACF of Noisy Cosine Wave data"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="time-series_files/figure-html/unnamed-chunk-12-3.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="stationary-time-series" class="level3" data-number="9.2.5">
+<h3 data-number="9.2.5" class="anchored" data-anchor-id="stationary-time-series"><span class="header-section-number">9.2.5</span> Stationary Time Series</h3>
+<p>A stationary time series is one that has no trend to it, in other words, the mean of the variable doesn’t change over the range of the observation. A second quality of a secondary series is that its variance is constant over time. The white noise data from above is stationary</p>
+<p>We can often detect trend by using the linear regression model, with time as the predictor</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>fit1<span class="ot">&lt;-</span><span class="fu">lm</span>(AQI<span class="sc">~</span>date, <span class="at">data=</span>bexar); <span class="fu">summary</span>(fit1) <span class="co">#negative trend</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = AQI ~ date, data = bexar)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-35.561 -10.856  -1.901   9.003 114.077 
+
+Coefficients:
+              Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) 473.796162 109.026847   4.346 1.71e-05 ***
+date         -0.023405   0.006015  -3.891 0.000115 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 16.91 on 454 degrees of freedom
+Multiple R-squared:  0.03227,   Adjusted R-squared:  0.03014 
+F-statistic: 15.14 on 1 and 454 DF,  p-value: 0.0001148</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">x=</span>bexar<span class="sc">$</span>date, <span class="at">y=</span>bexar<span class="sc">$</span>AQI)</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="fu">coef</span>(fit1), <span class="at">col=</span><span class="dv">2</span>, <span class="at">lwd=</span><span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="time-series_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>fit2<span class="ot">&lt;-</span><span class="fu">lm</span>(rate<span class="sc">~</span>date, <span class="at">data=</span>unemp2); <span class="fu">summary</span>(fit2) <span class="co">#no trend</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = rate ~ date, data = unemp2)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-2.7887 -1.4043 -0.5443  1.0016  8.3051 
+
+Coefficients:
+             Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) 5.341e+00  8.687e-01   6.149 3.17e-09 ***
+date        4.106e-05  5.853e-05   0.702    0.484    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 1.984 on 244 degrees of freedom
+Multiple R-squared:  0.002013,  Adjusted R-squared:  -0.002077 
+F-statistic: 0.4922 on 1 and 244 DF,  p-value: 0.4836</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">x=</span>unemp2<span class="sc">$</span>date, <span class="at">y=</span>unemp2<span class="sc">$</span>rate)</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="fu">coef</span>(fit2), <span class="at">col=</span><span class="dv">2</span>, <span class="at">lwd=</span><span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="time-series_files/figure-html/unnamed-chunk-13-2.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>fit3<span class="ot">&lt;-</span><span class="fu">lm</span>(ts3<span class="sc">~</span><span class="fu">seq</span>(<span class="dv">1</span>, <span class="fu">length</span>(ts3), <span class="dv">1</span>)); <span class="fu">summary</span>(fit3) <span class="co">#no trend</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = ts3 ~ seq(1, length(ts3), 1))
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-3.7708 -1.1880  0.0631  1.3104  3.8297 
+
+Coefficients:
+                         Estimate Std. Error t value Pr(&gt;|t|)
+(Intercept)             0.0423797  0.2297245   0.184    0.854
+seq(1, length(ts3), 1) -0.0005129  0.0019820  -0.259    0.796
+
+Residual standard error: 1.618 on 198 degrees of freedom
+Multiple R-squared:  0.0003381, Adjusted R-squared:  -0.004711 
+F-statistic: 0.06697 on 1 and 198 DF,  p-value: 0.7961</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">x=</span><span class="fu">seq</span>(<span class="dv">1</span>, <span class="fu">length</span>(ts3), <span class="dv">1</span>), <span class="at">y=</span>(c<span class="sc">+</span>w))</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="fu">coef</span>(fit3), <span class="at">col=</span><span class="dv">2</span>, <span class="at">lwd=</span><span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="time-series_files/figure-html/unnamed-chunk-13-3.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="non-stationary-time-series" class="level3" data-number="9.2.6">
+<h3 data-number="9.2.6" class="anchored" data-anchor-id="non-stationary-time-series"><span class="header-section-number">9.2.6</span> Non-stationary time series</h3>
+<p>A complement to the stationary series is a non-stationary series, which has a global trend to it, in that it increases or decreases in value over time</p>
+</section>
+<section id="removing-trend-in-a-series" class="level3" data-number="9.2.7">
+<h3 data-number="9.2.7" class="anchored" data-anchor-id="removing-trend-in-a-series"><span class="header-section-number">9.2.7</span> Removing trend in a series</h3>
+<p>Often we want to be able to measure auto-correlation without the trend being present, in that case, we can <em>de-trend</em> the data and make the series a stationary series.</p>
+<p>If <span class="math inline">\(x_t\)</span> is our time series, we can write it as being a sum of two things, the trend, <span class="math inline">\(\mu_t\)</span> and <span class="math inline">\(y_t\)</span> which is the stationary component.</p>
+<p><span class="math display">\[x_t = \mu_t + y_t\]</span> If the trend is a straight line, then we may have</p>
+<p><span class="math display">\[\mu_t = \beta_0 + \beta_1 t\]</span> which is just a linear regression, and in this case, the stationary component <span class="math inline">\(y_t\)</span> will be the residuals from the model:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>fit1<span class="ot">&lt;-</span><span class="fu">lm</span>(AQI<span class="sc">~</span>date, <span class="at">data=</span>bexar); <span class="fu">summary</span>(fit1) <span class="co">#negative trend</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = AQI ~ date, data = bexar)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-35.561 -10.856  -1.901   9.003 114.077 
+
+Coefficients:
+              Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) 473.796162 109.026847   4.346 1.71e-05 ***
+date         -0.023405   0.006015  -3.891 0.000115 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 16.91 on 454 degrees of freedom
+Multiple R-squared:  0.03227,   Adjusted R-squared:  0.03014 
+F-statistic: 15.14 on 1 and 454 DF,  p-value: 0.0001148</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">x=</span>bexar<span class="sc">$</span>date, <span class="at">y=</span>bexar<span class="sc">$</span>AQI)</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="fu">coef</span>(fit1), <span class="at">col=</span><span class="dv">2</span>, <span class="at">lwd=</span><span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="time-series_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">x=</span>bexar<span class="sc">$</span>date, <span class="at">y=</span><span class="fu">resid</span>(fit1), <span class="at">main=</span> <span class="st">"De trended time series of air quality"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="time-series_files/figure-html/unnamed-chunk-14-2.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(<span class="fu">resid</span>(fit1))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="time-series_files/figure-html/unnamed-chunk-14-3.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="differencing-a-time-series" class="level3" data-number="9.2.8">
+<h3 data-number="9.2.8" class="anchored" data-anchor-id="differencing-a-time-series"><span class="header-section-number">9.2.8</span> Differencing a time series</h3>
+<p>A way to remove seasonality in a time series is by <em>differencing</em> the series. The difference operation is:</p>
+<p><span class="math display">\[\nabla^d = (1-B)^d\]</span></p>
+<p>This is just the difference between the value of <span class="math inline">\(x_t\)</span> and the value that occurs <span class="math inline">\(d\)</span> values prior. For example, the <em>first difference</em> is often taken to remove seasonality in a series:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>x<span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span> <span class="dv">10</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>x</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1]  1  2  3  4  5  6  7  8  9 10</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">diff</span>(x)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1 1 1 1 1 1 1 1 1</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>x<span class="ot">&lt;-</span>c<span class="sc">+</span>w</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="time-series_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">diff</span>(x))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="time-series_files/figure-html/unnamed-chunk-15-2.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We see that the second plot no longer has the regular cosine wave pattern to it.</p>
+</section>
+</section>
+<section id="smoothing-a-time-series" class="level2" data-number="9.3">
+<h2 data-number="9.3" class="anchored" data-anchor-id="smoothing-a-time-series"><span class="header-section-number">9.3</span> Smoothing a time series</h2>
+<p>One descriptive technique that is commonly used in time series analysis is a smoothing model for the data. There are several kinds of these and we will look at a few next.</p>
+<section id="moving-average-of-time-series" class="level3" data-number="9.3.1">
+<h3 data-number="9.3.1" class="anchored" data-anchor-id="moving-average-of-time-series"><span class="header-section-number">9.3.1</span> Moving Average of Time Series</h3>
+<p>The moving average of a time series is:</p>
+<p><span class="math display">\[ m_t = \sum_{j=-k}^k \alpha_j x_{t-j}\]</span> This function takes a set of the <span class="math inline">\(k\)</span> observations, centered around <span class="math inline">\(x_t\)</span> and finds the mean of them. You’ve probably seen a lot of these during the <a href="https://coronavirus.jhu.edu/data/new-cases">COVID-19 pandemic</a></p>
+<p>The reason we do this is to try to identify the systematic component or components in the data. If the data are noisy, like the cosine data above:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot.ts</span>(c<span class="sc">+</span><span class="dv">5</span><span class="sc">*</span>w,  <span class="at">main=</span><span class="st">"signal + large noise"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="time-series_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>If we take a moving average of the series, we may be able to identify the signal in the noise:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(c<span class="sc">+</span><span class="dv">5</span><span class="sc">*</span>w,  <span class="at">main=</span><span class="st">"signal + large noise"</span>)</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>x<span class="ot">=</span>c<span class="sc">+</span><span class="dv">5</span><span class="sc">*</span>w</span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(c, <span class="at">col=</span><span class="dv">1</span>, <span class="at">lty=</span><span class="dv">3</span>)</span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">ma</span>(x, <span class="at">order=</span><span class="dv">5</span>), <span class="at">col=</span><span class="dv">2</span>)<span class="co">#5 day moving average</span></span>
+<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">ma</span>(x, <span class="at">order=</span><span class="dv">20</span>), <span class="at">col=</span><span class="dv">3</span>)<span class="co">#20 day moving average</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="time-series_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+<section id="kernel-smoothing" class="level4">
+<h4 class="anchored" data-anchor-id="kernel-smoothing">Kernel smoothing</h4>
+<p>Another modern approach is to use a smoothing spline or kernel-based smoother, which</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(c<span class="sc">+</span><span class="dv">5</span><span class="sc">*</span>w,  <span class="at">main=</span><span class="st">"signal + large noise"</span>)</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>x<span class="ot">=</span>c<span class="sc">+</span><span class="dv">5</span><span class="sc">*</span>w</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>t<span class="ot">&lt;-</span><span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(x)</span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(c, <span class="at">col=</span><span class="dv">1</span>, <span class="at">lty=</span><span class="dv">3</span>)</span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">ksmooth</span>(<span class="at">x=</span>t, <span class="at">y=</span>x, <span class="st">"normal"</span>, <span class="at">bandwidth=</span><span class="dv">5</span>), <span class="at">col=</span><span class="dv">2</span>)</span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">ksmooth</span>(<span class="at">x=</span>t, <span class="at">y=</span>x, <span class="st">"normal"</span>, <span class="at">bandwidth=</span><span class="dv">10</span>), <span class="at">col=</span><span class="dv">3</span>)</span>
+<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">ksmooth</span>(<span class="at">x=</span>t, <span class="at">y=</span>x, <span class="st">"normal"</span>, <span class="at">bandwidth=</span><span class="dv">20</span>), <span class="at">col=</span><span class="dv">4</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="time-series_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="smoothing-splines" class="level4">
+<h4 class="anchored" data-anchor-id="smoothing-splines">Smoothing splines</h4>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(c<span class="sc">+</span><span class="dv">5</span><span class="sc">*</span>w,  <span class="at">main=</span><span class="st">"signal + large noise"</span>)</span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>x<span class="ot">=</span>c<span class="sc">+</span><span class="dv">5</span><span class="sc">*</span>w</span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>t<span class="ot">&lt;-</span><span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(x)</span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(c, <span class="at">col=</span><span class="dv">1</span>, <span class="at">lty=</span><span class="dv">3</span>)</span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">smooth.spline</span>(<span class="at">x=</span>t, <span class="at">y=</span>x, <span class="at">spar=</span><span class="dv">1</span>), <span class="at">col=</span><span class="dv">2</span>)</span>
+<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">smooth.spline</span>(<span class="at">x=</span>t, <span class="at">y=</span>x, <span class="at">spar=</span>.<span class="dv">5</span>), <span class="at">col=</span><span class="dv">3</span>)</span>
+<span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">smooth.spline</span>(<span class="at">x=</span>t, <span class="at">y=</span>x, <span class="at">spar=</span>.<span class="dv">01</span>), <span class="at">col=</span><span class="dv">4</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="time-series_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="co">#lines(ksmooth(x=t, y=x, "normal", bandwidth=10), col=3)</span></span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a><span class="co">#lines(ksmooth(x=t, y=x, "normal", bandwidth=20), col=4)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+</section>
+</section>
+<section id="arima-models" class="level2" data-number="9.4">
+<h2 data-number="9.4" class="anchored" data-anchor-id="arima-models"><span class="header-section-number">9.4</span> ARIMA Models</h2>
+<p>One of the fundamental models in time series analysis is the <em>A</em>uto<em>R</em>egressive <em>I</em>ntegrated <em>M</em>oving <em>A</em>verage</p>
+<p>An auto-regressive model is one that predicts a future value, based on weighted average of previous values. The weights will decrease as the distance in time between the current and past values increase.</p>
+<p>An auto-regressive model of order <em>p</em>, abbreviated <strong>AR(p)</strong> is:</p>
+<p><span class="math display">\[x_t = \phi_1 x_{t-1} + \phi_2 x_{t-2}  + \dots +\phi_p x_{t-p} + w_t\]</span> where, the <span class="math inline">\(\phi_p\)</span> terms represent auto-regressive coefficients and where <span class="math inline">\(w_t\)</span> is a Gaussian white noise residual. The auto-regressive operation can be more succinctly defined using the <em>Backshift operator</em></p>
+<p><span class="math display">\[Bx_t = x_{t-1}\]</span></p>
+<p>and we can power this operator up to include greater lags of <span class="math inline">\(x_t\)</span></p>
+<p><span class="math display">\[B^k x_t  = x_{t-k}\]</span></p>
+<p>A commonly used model when modeling temporal dependence is that <em>AR(1)</em> model, where the current value of <span class="math inline">\(x\)</span> is predicted using the immediately preceding value:</p>
+<p><span class="math display">\[x_t = \sum_{j=0}^\infty \phi^j w_{t-j}\]</span></p>
+<section id="moving-average-models" class="level4">
+<h4 class="anchored" data-anchor-id="moving-average-models">Moving average models</h4>
+<p>The moving average model of order <em>q</em>, or <strong>MA(q)</strong> is :</p>
+<p><span class="math display">\[x_t = w_t + \theta_1 w_{t-1} + \theta_2 w_{t-2} + \dots + \theta_q w_{t-q}\]</span> where the <span class="math inline">\(\theta\)</span> values are lags of the series, of order <span class="math inline">\(q\)</span> and <span class="math inline">\(w_t\)</span> is again Gaussian white noise.</p>
+</section>
+<section id="arma-process" class="level4">
+<h4 class="anchored" data-anchor-id="arma-process">ARMA process</h4>
+<p>If we combine these two, we get an <em>A</em>uto<em>R</em>egressive <em>M</em>oving <em>A</em>verage, or <strong>ARMA(p,q)</strong> model.</p>
+<p><span class="math display">\[x_t = \alpha + \phi_1 x_{t-1} + \phi_2 x_{t-2}  + \dots +\phi_p x_{t-p} + w_t + \theta_1 w_{t-1} + \theta_2 w_{t-2} + \dots + \theta_q w_{t-q} \]</span></p>
+<p>Which just combines the auto-regression and the moving average models.</p>
+</section>
+<section id="arima-models-1" class="level3" data-number="9.4.1">
+<h3 data-number="9.4.1" class="anchored" data-anchor-id="arima-models-1"><span class="header-section-number">9.4.1</span> ARIMA models</h3>
+<p>If we add a trend component to the time series model, we get the <strong>ARIMA(p,d,q)</strong> model</p>
+</section>
+</section>
+<section id="forecasting" class="level2" data-number="9.5">
+<h2 data-number="9.5" class="anchored" data-anchor-id="forecasting"><span class="header-section-number">9.5</span> Forecasting</h2>
+<p>Forecasting is the process of predicting future values of a variable, based on the observed patterns of the variable from the past. If we have the observed time series, <span class="math inline">\(x_t\)</span>, then we may want to predict future values of the series at <span class="math inline">\(m\)</span> periods in the future, <span class="math inline">\(x_{n+m}\)</span></p>
+<p>In order to do this, we assume that <span class="math inline">\(x_t\)</span> is stationary and the model parameters are known (but we typically estimate them from the data).</p>
+<p>For example, if we want to forecast the air quality in Bexar County in the future, we would first estimate the parameters of the model we want, then apply that model to forecast the future values.</p>
+<p>The <code>forecast</code> package is a great place to start for basic forecasting models.</p>
+<p>Below are some simple methods, see <a href="https://otexts.com/fpp2/simple-methods.html">Hyndmans’s ch 3 for these</a></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(forecast)</span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Simple mean forecast</span></span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">meanf</span>(ts1, <span class="at">h=</span><span class="dv">60</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="time-series_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Naive method - same as the last observation</span></span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">naive</span>(ts1, <span class="at">h=</span><span class="dv">60</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="time-series_files/figure-html/unnamed-chunk-20-2.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">rwf</span>(ts1, <span class="at">h=</span><span class="dv">60</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="time-series_files/figure-html/unnamed-chunk-20-3.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(ts1)<span class="sc">+</span></span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autolayer</span>(<span class="fu">ma</span>(ts1, <span class="dv">30</span>), <span class="at">series=</span><span class="st">"30 day MA"</span>)<span class="sc">+</span></span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Day"</span>)<span class="sc">+</span><span class="fu">ylab</span>(<span class="st">"AQI"</span>)<span class="sc">+</span></span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Air Quality in Bexar county, 30 Day moving average"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 30 rows containing missing values or values outside the scale range
+(`geom_line()`).</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="time-series_files/figure-html/unnamed-chunk-20-4.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="arima-forecasting" class="level2" data-number="9.6">
+<h2 data-number="9.6" class="anchored" data-anchor-id="arima-forecasting"><span class="header-section-number">9.6</span> ARIMA forecasting</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>ts2 <span class="sc">%&gt;%</span> <span class="fu">stl</span>(<span class="at">s.window=</span><span class="st">'periodic'</span>) <span class="sc">%&gt;%</span> <span class="fu">seasadj</span>() <span class="ot">-&gt;</span> unemp3</span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(unemp3)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="time-series_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="co">#first differnce</span></span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>unemp3<span class="sc">%&gt;%</span> <span class="fu">diff</span>() <span class="sc">%&gt;%</span><span class="fu">ggtsdisplay</span>(<span class="at">main=</span><span class="st">"First difference"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="time-series_files/figure-html/unnamed-chunk-21-2.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="co">#automatically estimate the model parameters</span></span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a>fit<span class="ot">&lt;-</span><span class="fu">auto.arima</span>(ts2)</span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a>fit</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Series: ts2 
+ARIMA(0,1,0)(0,0,2)[12] 
+
+Coefficients:
+        sma1    sma2
+      0.3592  0.2814
+s.e.  0.1534  0.1252
+
+sigma^2 = 0.5148:  log likelihood = -266.77
+AIC=539.55   AICc=539.65   BIC=550.05</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(<span class="fu">forecast</span>(fit))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="time-series_files/figure-html/unnamed-chunk-21-3.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>fit2<span class="ot">&lt;-</span><span class="fu">auto.arima</span>(unemp3)</span>
+<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(<span class="fu">forecast</span>(fit2))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="time-series_files/figure-html/unnamed-chunk-21-4.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>fit2<span class="sc">%&gt;%</span></span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">forecast</span>(<span class="at">h=</span><span class="dv">12</span>)<span class="sc">%&gt;%</span></span>
+<span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autoplot</span>(<span class="at">main=</span><span class="st">"12 month forecast for unemployment"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="time-series_files/figure-html/unnamed-chunk-21-5.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>fit3<span class="ot">&lt;-</span><span class="fu">auto.arima</span>(ts1)</span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a>fit3<span class="sc">%&gt;%</span></span>
+<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">forecast</span>(<span class="at">h=</span><span class="dv">60</span>)<span class="sc">%&gt;%</span></span>
+<span id="cb68-4"><a href="#cb68-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autoplot</span>(<span class="at">main=</span><span class="st">"60 day forecast of AQI"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="time-series_files/figure-html/unnamed-chunk-21-6.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="classical-decomposition" class="level2" data-number="9.7">
+<h2 data-number="9.7" class="anchored" data-anchor-id="classical-decomposition"><span class="header-section-number">9.7</span> Classical Decomposition</h2>
+<p>One method of exploring the components of a time series is <em>decomposition</em> There are two basic forms of this, <em>Additive</em> and <em>Multiplicative</em> decomposition.</p>
+<ul>
+<li>Additive decomposition decomposes the series as:</li>
+</ul>
+<p><span class="math display">\[x_t = R_t + T_t + S_t\]</span> Where <span class="math inline">\(R_t\)</span> is a residual, <span class="math inline">\(T_t\)</span> is the trend of the data and <span class="math inline">\(S_t\)</span> is the seasonal component of the data</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>ts2<span class="sc">%&gt;%</span></span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">decompose</span>(<span class="at">type=</span><span class="st">"additive"</span>)<span class="sc">%&gt;%</span> <span class="fu">autoplot</span>() <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">"Day"</span>) <span class="sc">+</span></span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Classical additive decomposition</span></span>
+<span id="cb69-4"><a href="#cb69-4" aria-hidden="true" tabindex="-1"></a><span class="st">    of US Unemployment"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="time-series_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li>Multiplicative decomposition: The second form of decomposition is multiplicative, this decomposes the series as:</li>
+</ul>
+<p><span class="math display">\[x_t = R_t * T_t * S_t\]</span></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a>ts2<span class="sc">%&gt;%</span></span>
+<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">decompose</span>(<span class="at">type=</span><span class="st">"multiplicative"</span>)<span class="sc">%&gt;%</span> <span class="fu">autoplot</span>() <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">"Day"</span>) <span class="sc">+</span></span>
+<span id="cb70-3"><a href="#cb70-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Classical multiplicative decomposition</span></span>
+<span id="cb70-4"><a href="#cb70-4" aria-hidden="true" tabindex="-1"></a><span class="st">    of US Unemployment"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="time-series_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+<section id="seasonal-adjustment" class="level3" data-number="9.7.1">
+<h3 data-number="9.7.1" class="anchored" data-anchor-id="seasonal-adjustment"><span class="header-section-number">9.7.1</span> Seasonal adjustment</h3>
+<p>In unemployment data, the BLS usually presents the <em>seasonally adjusted</em> unemployment rate. This is because there is seasonality in the pattern of unemployment, with some months consistently having higher or lower unemployment. To produce this, they take the series and subtract out the seasonal component, as in the above decomposition.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a>adjust1<span class="ot">&lt;-</span><span class="fu">decompose</span>(ts2,<span class="at">type =</span>  <span class="st">"add"</span>)</span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a>adjust2<span class="ot">&lt;-</span>ts2 <span class="sc">-</span> adjust1<span class="sc">$</span>seasonal</span>
+<span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb71-4"><a href="#cb71-4" aria-hidden="true" tabindex="-1"></a>test<span class="ot">&lt;-</span><span class="fu">data.frame</span>(<span class="at">month =</span> <span class="fu">unique</span>(unemp2<span class="sc">$</span>date), <span class="at">unemprate =</span> adjust2)</span>
+<span id="cb71-5"><a href="#cb71-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb71-6"><a href="#cb71-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>()<span class="sc">+</span><span class="fu">geom_line</span>(<span class="at">data=</span>test, <span class="fu">aes</span>(<span class="at">x=</span>month, <span class="at">y=</span>unemprate, <span class="at">color=</span><span class="st">"green"</span>))<span class="sc">+</span><span class="fu">geom_line</span>(<span class="at">data=</span>unemp2, <span class="fu">aes</span>(<span class="at">x=</span>date, <span class="at">y=</span>rate, <span class="at">color=</span><span class="st">"red"</span>) )<span class="sc">+</span><span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Seasonally Adjusted Unemployment Rate"</span>,</span>
+<span id="cb71-7"><a href="#cb71-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"Jan 2000 to June 2020"</span>,</span>
+<span id="cb71-8"><a href="#cb71-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">caption =</span> <span class="st">"Source: IPUMS BLS Monthly Data </span><span class="sc">\n</span><span class="st"> Calculations by Corey S. Sparks, Ph.D."</span>,</span>
+<span id="cb71-9"><a href="#cb71-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Month"</span>,</span>
+<span id="cb71-10"><a href="#cb71-10" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Unemployment Rate"</span>)<span class="sc">+</span><span class="fu">theme_minimal</span>()<span class="sc">+</span><span class="fu">scale_color_discrete</span>(<span class="at">name =</span> <span class="st">"Rates"</span>, <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Adjusted"</span>, <span class="st">"Raw"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Don't know how to automatically pick scale for object of type &lt;ts&gt;. Defaulting
+to continuous.</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="time-series_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>adjust3<span class="ot">&lt;-</span>ts2 <span class="sc">-</span> adjust1<span class="sc">$</span>trend</span>
+<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-3"><a href="#cb73-3" aria-hidden="true" tabindex="-1"></a>test<span class="ot">&lt;-</span><span class="fu">data.frame</span>(<span class="at">month =</span> <span class="fu">unique</span>(unemp2<span class="sc">$</span>date), <span class="at">unemprate =</span> adjust3)</span>
+<span id="cb73-4"><a href="#cb73-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-5"><a href="#cb73-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>()<span class="sc">+</span><span class="fu">geom_line</span>(<span class="at">data=</span>test, <span class="fu">aes</span>(<span class="at">x=</span>month, <span class="at">y=</span>unemprate, <span class="at">color=</span><span class="st">"green"</span>))<span class="sc">+</span><span class="fu">geom_line</span>(<span class="at">data=</span>unemp2, <span class="fu">aes</span>(<span class="at">x=</span>date, <span class="at">y=</span>rate, <span class="at">color=</span><span class="st">"red"</span>) )<span class="sc">+</span><span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Detrended Unemployment Rate"</span>,</span>
+<span id="cb73-6"><a href="#cb73-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"Jan 2000 to June 2020"</span>,</span>
+<span id="cb73-7"><a href="#cb73-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">caption =</span> <span class="st">"Source: IPUMS BLS Monthly Data </span><span class="sc">\n</span><span class="st"> Calculations by Corey S. Sparks, Ph.D."</span>,</span>
+<span id="cb73-8"><a href="#cb73-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Month"</span>,</span>
+<span id="cb73-9"><a href="#cb73-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Unemployment Rate"</span>)<span class="sc">+</span><span class="fu">theme_minimal</span>()<span class="sc">+</span><span class="fu">scale_color_discrete</span>(<span class="at">name =</span> <span class="st">"Rates"</span>, <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Adjusted"</span>, <span class="st">"Raw"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Don't know how to automatically pick scale for object of type &lt;ts&gt;. Defaulting
+to continuous.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 12 rows containing missing values or values outside the scale range
+(`geom_line()`).</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="time-series_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+
+
+<!-- -->
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+        for (let i=0; i<detailsSrc.length; i++) {
+          const details = detailsSrc[i].parentElement;
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./random-forests.html" class="pagination-link" aria-label="Demography Informal Methods Seminar - Classification and Regression Trees">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Demography Informal Methods Seminar - Classification and Regression Trees</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+  </div>
+</nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb76" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Demography Informal Methods Seminar - Introduction to Time Series Analysis</span></span>
+<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-5"><a href="#cb76-5" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb76-6"><a href="#cb76-6" aria-hidden="true" tabindex="-1"></a><span class="co">#| include: false</span></span>
+<span id="cb76-7"><a href="#cb76-7" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span>opts_chunk<span class="sc">$</span><span class="fu">set</span>(<span class="at">echo =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb76-8"><a href="#cb76-8" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb76-9"><a href="#cb76-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-10"><a href="#cb76-10" aria-hidden="true" tabindex="-1"></a><span class="fu">## Time Series Analysis</span></span>
+<span id="cb76-11"><a href="#cb76-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-12"><a href="#cb76-12" aria-hidden="true" tabindex="-1"></a>I would suggest you read chapters 1 through 3 of <span class="co">[</span><span class="ot">Time Series Analysis and Its Applications  4th ed</span><span class="co">](https://utsacloud-my.sharepoint.com/:b:/g/personal/corey_sparks_utsa_edu/Ear7EgBI0FVJmN-GhNqe0mIBNI5bNdB5QVZzeY2M1dnZUg?e=cA8e68)</span> to get a introductory treatment of this topic.</span>
+<span id="cb76-13"><a href="#cb76-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-14"><a href="#cb76-14" aria-hidden="true" tabindex="-1"></a>I also strongly urge you to check out <span class="co">[</span><span class="ot">Rob Hyndman's book on forecasting</span><span class="co">](https://otexts.com/fpp2/)</span>, which is free.</span>
+<span id="cb76-15"><a href="#cb76-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-16"><a href="#cb76-16" aria-hidden="true" tabindex="-1"></a>In time series analysis, we are typically interested in describing the pattern of variation of a variable over time. This can be extended to include multiple variables, but the largest number of applications involve a single variable.</span>
+<span id="cb76-17"><a href="#cb76-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-18"><a href="#cb76-18" aria-hidden="true" tabindex="-1"></a>Time series data are very different from other data you may have encountered. These are *NOT* the same as longitudinal data, nor are they the same as event history data. Sometimes these terms are thrown around as if they are the same, but they are not. Time series data are collected on a very regular basis, such as every minute, day, week, month, etc, and are typically measured for a long period of time, often years.</span>
+<span id="cb76-19"><a href="#cb76-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-20"><a href="#cb76-20" aria-hidden="true" tabindex="-1"></a>Much of time series analysis is descriptive, in that we are wanting to describe a few basic qualities of a time series.</span>
+<span id="cb76-21"><a href="#cb76-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-22"><a href="#cb76-22" aria-hidden="true" tabindex="-1"></a>In these examples, we will use both simulated and real data. Data come from two sources:</span>
+<span id="cb76-23"><a href="#cb76-23" aria-hidden="true" tabindex="-1"></a><span class="ss"> - </span><span class="co">[</span><span class="ot">BLS monthly unemployment rates</span><span class="co">](https://www.bls.gov/webapps/legacy/cpsatab1.htm)</span></span>
+<span id="cb76-24"><a href="#cb76-24" aria-hidden="true" tabindex="-1"></a><span class="ss"> - </span><span class="co">[</span><span class="ot">Daily air quality for Bexar County</span><span class="co">](https://aqs.epa.gov/aqsweb/airdata/download_files.html#Daily)</span></span>
+<span id="cb76-25"><a href="#cb76-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-26"><a href="#cb76-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-27"><a href="#cb76-27" aria-hidden="true" tabindex="-1"></a><span class="fu">### Data</span></span>
+<span id="cb76-28"><a href="#cb76-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-31"><a href="#cb76-31" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb76-32"><a href="#cb76-32" aria-hidden="true" tabindex="-1"></a><span class="co">#unemployment</span></span>
+<span id="cb76-33"><a href="#cb76-33" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="fu">url</span>(<span class="st">"https://github.com/coreysparks/r_courses/raw/refs/heads/master/data/bls_unemp.Rdata"</span>))</span>
+<span id="cb76-34"><a href="#cb76-34" aria-hidden="true" tabindex="-1"></a><span class="co">#air quality</span></span>
+<span id="cb76-35"><a href="#cb76-35" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="fu">url</span>(<span class="st">"https://github.com/coreysparks/r_courses/raw/refs/heads/master/data/bexar_air.Rdata"</span>))</span>
+<span id="cb76-36"><a href="#cb76-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-37"><a href="#cb76-37" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb76-38"><a href="#cb76-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-39"><a href="#cb76-39" aria-hidden="true" tabindex="-1"></a><span class="fu">### Libraries</span></span>
+<span id="cb76-42"><a href="#cb76-42" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb76-43"><a href="#cb76-43" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb76-44"><a href="#cb76-44" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb76-45"><a href="#cb76-45" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggfortify)</span>
+<span id="cb76-46"><a href="#cb76-46" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(forecast)</span>
+<span id="cb76-47"><a href="#cb76-47" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb76-48"><a href="#cb76-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-49"><a href="#cb76-49" aria-hidden="true" tabindex="-1"></a><span class="fu">## Time series data</span></span>
+<span id="cb76-50"><a href="#cb76-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-51"><a href="#cb76-51" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Air quality data</span></span>
+<span id="cb76-52"><a href="#cb76-52" aria-hidden="true" tabindex="-1"></a>These are daily data, which start at January 1, 2019. We tell R these are daily data by stating that the frequency is 365 (days)</span>
+<span id="cb76-55"><a href="#cb76-55" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb76-56"><a href="#cb76-56" aria-hidden="true" tabindex="-1"></a><span class="co">#daily Air quality index from January 1, 2019 - March 31, 2020</span></span>
+<span id="cb76-57"><a href="#cb76-57" aria-hidden="true" tabindex="-1"></a>ts1<span class="ot">&lt;-</span><span class="fu">ts</span>(bexar<span class="sc">$</span>AQI, <span class="at">frequency =</span> <span class="dv">365</span>, <span class="at">start=</span><span class="fu">c</span>(<span class="dv">2019</span>,<span class="dv">1</span>))</span>
+<span id="cb76-58"><a href="#cb76-58" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(ts1)</span>
+<span id="cb76-59"><a href="#cb76-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-60"><a href="#cb76-60" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ts1)</span>
+<span id="cb76-61"><a href="#cb76-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-62"><a href="#cb76-62" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>bexar, <span class="fu">aes</span>(<span class="at">x=</span>date, <span class="at">y=</span>AQI))<span class="sc">+</span><span class="fu">geom_line</span>()<span class="sc">+</span><span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Bexar County, TX - Air Quality Index"</span>,<span class="at">subtitle =</span> <span class="st">"January 2019 to March 2020"</span>,</span>
+<span id="cb76-63"><a href="#cb76-63" aria-hidden="true" tabindex="-1"></a>       <span class="at">caption =</span> <span class="st">"Source: EPA Air Data </span><span class="sc">\n</span><span class="st"> Calculations by Corey S. Sparks, Ph.D."</span>,</span>
+<span id="cb76-64"><a href="#cb76-64" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Date"</span>,</span>
+<span id="cb76-65"><a href="#cb76-65" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"AQI"</span>)</span>
+<span id="cb76-66"><a href="#cb76-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-67"><a href="#cb76-67" aria-hidden="true" tabindex="-1"></a>bexar<span class="sc">%&gt;%</span></span>
+<span id="cb76-68"><a href="#cb76-68" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(date, AQI)<span class="sc">%&gt;%</span></span>
+<span id="cb76-69"><a href="#cb76-69" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="at">n=</span><span class="dv">10</span>)</span>
+<span id="cb76-70"><a href="#cb76-70" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb76-71"><a href="#cb76-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-72"><a href="#cb76-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-73"><a href="#cb76-73" aria-hidden="true" tabindex="-1"></a><span class="fu">#### BLS Unemployment data</span></span>
+<span id="cb76-74"><a href="#cb76-74" aria-hidden="true" tabindex="-1"></a>This data set is a time series of monthly unemployment rates from 2000 to 2020. These data are Monthly, so we tell R that their frequency is 12 months (every month is repeated every 12 observations), with start and end dates of January 2000 and June 2020</span>
+<span id="cb76-75"><a href="#cb76-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-78"><a href="#cb76-78" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb76-79"><a href="#cb76-79" aria-hidden="true" tabindex="-1"></a><span class="co">#Montly unemployment Rate from January 2000 - June, 2020</span></span>
+<span id="cb76-80"><a href="#cb76-80" aria-hidden="true" tabindex="-1"></a>unemp<span class="ot">&lt;-</span>unemp[unemp<span class="sc">$</span>Series.ID<span class="sc">==</span><span class="st">"LNU04000000"</span>,]</span>
+<span id="cb76-81"><a href="#cb76-81" aria-hidden="true" tabindex="-1"></a>unemp<span class="ot">&lt;-</span> <span class="fu">t</span>(unemp[<span class="sc">-</span><span class="dv">1</span>])</span>
+<span id="cb76-82"><a href="#cb76-82" aria-hidden="true" tabindex="-1"></a>unemp<span class="ot">&lt;-</span>unemp[<span class="fu">is.na</span>(unemp)<span class="sc">==</span>F]</span>
+<span id="cb76-83"><a href="#cb76-83" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-84"><a href="#cb76-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-85"><a href="#cb76-85" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-86"><a href="#cb76-86" aria-hidden="true" tabindex="-1"></a>ts2<span class="ot">&lt;-</span><span class="fu">ts</span>(unemp, <span class="at">start=</span><span class="fu">c</span>(<span class="dv">2000</span>,<span class="dv">1</span>), <span class="at">end=</span><span class="fu">c</span>(<span class="dv">2020</span>,<span class="dv">6</span>), <span class="at">freq=</span><span class="dv">12</span>)</span>
+<span id="cb76-87"><a href="#cb76-87" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggfortify)</span>
+<span id="cb76-88"><a href="#cb76-88" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-89"><a href="#cb76-89" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(ts2)<span class="sc">+</span><span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"US Monthly Unemployment Rate"</span>,<span class="at">subtitle =</span> <span class="st">"January 2000 to June 2020"</span>,</span>
+<span id="cb76-90"><a href="#cb76-90" aria-hidden="true" tabindex="-1"></a>       <span class="at">caption =</span> <span class="st">"Source: EPA Air Data </span><span class="sc">\n</span><span class="st"> Calculations by Corey S. Sparks, Ph.D."</span>,</span>
+<span id="cb76-91"><a href="#cb76-91" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Date"</span>,</span>
+<span id="cb76-92"><a href="#cb76-92" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Unemployment Rate"</span>)</span>
+<span id="cb76-93"><a href="#cb76-93" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-94"><a href="#cb76-94" aria-hidden="true" tabindex="-1"></a>unemp2<span class="ot">&lt;-</span><span class="fu">data.frame</span>(<span class="at">rate=</span>unemp, <span class="at">date=</span><span class="fu">seq</span>(<span class="at">from=</span><span class="fu">as.Date</span>(<span class="st">"2000-01-01"</span>), <span class="at">to=</span><span class="fu">as.Date</span>(<span class="st">"2020-06-01"</span>), <span class="at">by=</span><span class="st">"months"</span>))</span>
+<span id="cb76-95"><a href="#cb76-95" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(unemp2, <span class="at">n=</span><span class="dv">10</span>)</span>
+<span id="cb76-96"><a href="#cb76-96" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb76-97"><a href="#cb76-97" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-98"><a href="#cb76-98" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-99"><a href="#cb76-99" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Fake data example - White noise</span></span>
+<span id="cb76-100"><a href="#cb76-100" aria-hidden="true" tabindex="-1"></a>White noise can be though of as a random variable with no discernible trend or pattern to them. They are typically thought of as a random Gaussian variable. If we did a histogram of it, it would be a nice, pretty mound shaped, symmetric distribution.</span>
+<span id="cb76-103"><a href="#cb76-103" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb76-104"><a href="#cb76-104" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1115</span>)</span>
+<span id="cb76-105"><a href="#cb76-105" aria-hidden="true" tabindex="-1"></a>x<span class="ot">&lt;-</span><span class="fu">rnorm</span>(<span class="dv">200</span>)</span>
+<span id="cb76-106"><a href="#cb76-106" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x, <span class="at">type=</span><span class="st">"l"</span>, <span class="at">main=</span><span class="st">"White Noise"</span>)</span>
+<span id="cb76-107"><a href="#cb76-107" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb76-108"><a href="#cb76-108" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-109"><a href="#cb76-109" aria-hidden="true" tabindex="-1"></a><span class="fu">### More fake data - Random walk with drift</span></span>
+<span id="cb76-110"><a href="#cb76-110" aria-hidden="true" tabindex="-1"></a>Another type of random pattern are random walks. These are cumulative sums of random variables. They can increase or decrease over time, but they are only doing so based on recent previous events and their values.</span>
+<span id="cb76-111"><a href="#cb76-111" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-114"><a href="#cb76-114" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb76-115"><a href="#cb76-115" aria-hidden="true" tabindex="-1"></a>w<span class="ot">&lt;-</span><span class="fu">rnorm</span>(<span class="dv">200</span>); x<span class="ot">=</span><span class="fu">cumsum</span>(w)</span>
+<span id="cb76-116"><a href="#cb76-116" aria-hidden="true" tabindex="-1"></a>wd<span class="ot">&lt;-</span> w<span class="fl">+.2</span>; xd<span class="ot">=</span><span class="fu">cumsum</span>(wd)</span>
+<span id="cb76-117"><a href="#cb76-117" aria-hidden="true" tabindex="-1"></a><span class="fu">plot.ts</span>(xd, <span class="at">main =</span> <span class="st">"Random Walk with Drift"</span>, <span class="at">col=</span><span class="dv">2</span>, <span class="at">ylim=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">30</span>, <span class="dv">40</span>))</span>
+<span id="cb76-118"><a href="#cb76-118" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(x, <span class="at">col=</span><span class="dv">1</span>)</span>
+<span id="cb76-119"><a href="#cb76-119" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h=</span><span class="dv">0</span>, <span class="at">lty=</span><span class="dv">2</span>)</span>
+<span id="cb76-120"><a href="#cb76-120" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb76-121"><a href="#cb76-121" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-122"><a href="#cb76-122" aria-hidden="true" tabindex="-1"></a><span class="fu">### Signal and Noise</span></span>
+<span id="cb76-123"><a href="#cb76-123" aria-hidden="true" tabindex="-1"></a>Often in time series data, we will have a noisy series, meaning that there is an underlying signal that we want to describe, but there is random white noise that accompanies it. Below, we simulate a cosine curve and add a small amount and a large amount of noise to  it. With a small amount of noise, the signal is still visible, but with a large amount of random variation, the signal becomes almost indiscernible.</span>
+<span id="cb76-124"><a href="#cb76-124" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-127"><a href="#cb76-127" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb76-128"><a href="#cb76-128" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig.height: 7</span></span>
+<span id="cb76-129"><a href="#cb76-129" aria-hidden="true" tabindex="-1"></a>t<span class="ot">&lt;-</span><span class="dv">1</span><span class="sc">:</span><span class="dv">200</span></span>
+<span id="cb76-130"><a href="#cb76-130" aria-hidden="true" tabindex="-1"></a>c<span class="ot">&lt;-</span><span class="dv">2</span><span class="sc">*</span><span class="fu">cos</span>(<span class="dv">2</span><span class="sc">*</span>pi<span class="sc">*</span>t<span class="sc">/</span><span class="dv">50</span>)</span>
+<span id="cb76-131"><a href="#cb76-131" aria-hidden="true" tabindex="-1"></a>w<span class="ot">&lt;-</span><span class="fu">rnorm</span>(<span class="dv">200</span>)</span>
+<span id="cb76-132"><a href="#cb76-132" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-133"><a href="#cb76-133" aria-hidden="true" tabindex="-1"></a>ts3<span class="ot">&lt;-</span><span class="fu">ts</span>(c<span class="sc">+</span>w)</span>
+<span id="cb76-134"><a href="#cb76-134" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">1</span>))</span>
+<span id="cb76-135"><a href="#cb76-135" aria-hidden="true" tabindex="-1"></a><span class="fu">plot.ts</span>(c, <span class="at">main=</span><span class="st">"signal"</span>)</span>
+<span id="cb76-136"><a href="#cb76-136" aria-hidden="true" tabindex="-1"></a><span class="fu">plot.ts</span>(c<span class="sc">+</span>w, <span class="at">main=</span><span class="st">"signal+ low noise"</span>)</span>
+<span id="cb76-137"><a href="#cb76-137" aria-hidden="true" tabindex="-1"></a><span class="fu">plot.ts</span>(c<span class="sc">+</span><span class="dv">5</span><span class="sc">*</span>w,  <span class="at">main=</span><span class="st">"signal + large noise"</span>)</span>
+<span id="cb76-138"><a href="#cb76-138" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb76-139"><a href="#cb76-139" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-140"><a href="#cb76-140" aria-hidden="true" tabindex="-1"></a><span class="fu">### Some terminology</span></span>
+<span id="cb76-141"><a href="#cb76-141" aria-hidden="true" tabindex="-1"></a><span class="ss"> - </span>lag = a value of the time series that occurs at some regular interval before the current value. For example, if this is our series:</span>
+<span id="cb76-142"><a href="#cb76-142" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-145"><a href="#cb76-145" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb76-146"><a href="#cb76-146" aria-hidden="true" tabindex="-1"></a>x1<span class="ot">&lt;-</span><span class="fu">rnorm</span>(<span class="dv">10</span>)</span>
+<span id="cb76-147"><a href="#cb76-147" aria-hidden="true" tabindex="-1"></a>x1</span>
+<span id="cb76-148"><a href="#cb76-148" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-149"><a href="#cb76-149" aria-hidden="true" tabindex="-1"></a><span class="fu">lag</span>(x1, <span class="dv">1</span>) <span class="co">#first lag</span></span>
+<span id="cb76-150"><a href="#cb76-150" aria-hidden="true" tabindex="-1"></a><span class="fu">lag</span>(x1, <span class="dv">5</span>) <span class="co">#fifth lag</span></span>
+<span id="cb76-151"><a href="#cb76-151" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb76-152"><a href="#cb76-152" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-153"><a href="#cb76-153" aria-hidden="true" tabindex="-1"></a><span class="ss"> - </span>Trend = increase or decrease in the mean of a variable, often over the long term. For example, this variable should have no trend:</span>
+<span id="cb76-154"><a href="#cb76-154" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-157"><a href="#cb76-157" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb76-158"><a href="#cb76-158" aria-hidden="true" tabindex="-1"></a>x2<span class="ot">&lt;-</span><span class="fu">rnorm</span>(<span class="dv">20</span>)</span>
+<span id="cb76-159"><a href="#cb76-159" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x2)</span>
+<span id="cb76-160"><a href="#cb76-160" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">ksmooth</span>(<span class="at">y=</span>x2,<span class="at">x=</span><span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(x2), <span class="st">"normal"</span>, <span class="at">bandwidth=</span><span class="dv">5</span>), <span class="at">col=</span><span class="dv">2</span>)</span>
+<span id="cb76-161"><a href="#cb76-161" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-162"><a href="#cb76-162" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb76-163"><a href="#cb76-163" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-164"><a href="#cb76-164" aria-hidden="true" tabindex="-1"></a>While this one increases over time:</span>
+<span id="cb76-167"><a href="#cb76-167" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb76-168"><a href="#cb76-168" aria-hidden="true" tabindex="-1"></a>b0<span class="ot">&lt;-</span><span class="dv">0</span>; b1<span class="ot">=</span>.<span class="dv">5</span></span>
+<span id="cb76-169"><a href="#cb76-169" aria-hidden="true" tabindex="-1"></a>t<span class="ot">&lt;-</span><span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">100</span>, <span class="dv">1</span>)</span>
+<span id="cb76-170"><a href="#cb76-170" aria-hidden="true" tabindex="-1"></a>x3<span class="ot">&lt;-</span><span class="fu">rnorm</span>(<span class="dv">100</span>, b0<span class="sc">+</span>b1<span class="sc">*</span>t, <span class="dv">5</span>)</span>
+<span id="cb76-171"><a href="#cb76-171" aria-hidden="true" tabindex="-1"></a>tx3<span class="ot">&lt;-</span><span class="fu">ts</span>(x3)</span>
+<span id="cb76-172"><a href="#cb76-172" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(tx3)</span>
+<span id="cb76-173"><a href="#cb76-173" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">coef=</span><span class="fu">coef</span>(<span class="fu">lm</span>(x3<span class="sc">~</span>t)), <span class="at">col=</span><span class="dv">3</span>)</span>
+<span id="cb76-174"><a href="#cb76-174" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb76-175"><a href="#cb76-175" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-176"><a href="#cb76-176" aria-hidden="true" tabindex="-1"></a><span class="ss"> - </span>Seasonality = This is a regular pattern of variation in a  time series. It is a patter that repeats (like the cosine wave above) at a regular pattern within the data.</span>
+<span id="cb76-177"><a href="#cb76-177" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-178"><a href="#cb76-178" aria-hidden="true" tabindex="-1"></a><span class="fu">### Auto-correlation in Time Series</span></span>
+<span id="cb76-179"><a href="#cb76-179" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-180"><a href="#cb76-180" aria-hidden="true" tabindex="-1"></a>Auto-correlation of a time series is $\gamma (h)$ measures how correlated a time series is with different lags of itself.</span>
+<span id="cb76-181"><a href="#cb76-181" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-182"><a href="#cb76-182" aria-hidden="true" tabindex="-1"></a>$$\gamma (h) = E[(x_{t+h} - \mu)(x_t - \mu)$$</span>
+<span id="cb76-183"><a href="#cb76-183" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-184"><a href="#cb76-184" aria-hidden="true" tabindex="-1"></a>$$\rho(h) = \frac{\gamma(t+h,t)}{\sqrt{\gamma(t+h,t+h)\gamma(t,t) )}} = \frac{\gamma(h)}{\gamma(0)}$$</span>
+<span id="cb76-185"><a href="#cb76-185" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-186"><a href="#cb76-186" aria-hidden="true" tabindex="-1"></a>shows the correlation of a variable with itself at a given time lag $h$.</span>
+<span id="cb76-187"><a href="#cb76-187" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-190"><a href="#cb76-190" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb76-191"><a href="#cb76-191" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(ts1, <span class="at">main=</span><span class="st">"ACF of Air Quality Data"</span>)</span>
+<span id="cb76-192"><a href="#cb76-192" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(ts2, <span class="at">main=</span><span class="st">"ACF of Unemployment Data"</span>)</span>
+<span id="cb76-193"><a href="#cb76-193" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(ts3, <span class="at">main=</span><span class="st">"ACF of Noisy Cosine Wave data"</span>)</span>
+<span id="cb76-194"><a href="#cb76-194" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-195"><a href="#cb76-195" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb76-196"><a href="#cb76-196" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-197"><a href="#cb76-197" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-198"><a href="#cb76-198" aria-hidden="true" tabindex="-1"></a><span class="fu">### Stationary Time Series</span></span>
+<span id="cb76-199"><a href="#cb76-199" aria-hidden="true" tabindex="-1"></a>A stationary time series is one that has no trend to it, in other words, the mean of the variable doesn't change over the range of the observation. A second quality of a secondary series is that its variance is constant over time. The white noise data from above is stationary</span>
+<span id="cb76-200"><a href="#cb76-200" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-201"><a href="#cb76-201" aria-hidden="true" tabindex="-1"></a>We can often detect trend by using the linear regression model, with time as the predictor</span>
+<span id="cb76-204"><a href="#cb76-204" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb76-205"><a href="#cb76-205" aria-hidden="true" tabindex="-1"></a>fit1<span class="ot">&lt;-</span><span class="fu">lm</span>(AQI<span class="sc">~</span>date, <span class="at">data=</span>bexar); <span class="fu">summary</span>(fit1) <span class="co">#negative trend</span></span>
+<span id="cb76-206"><a href="#cb76-206" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">x=</span>bexar<span class="sc">$</span>date, <span class="at">y=</span>bexar<span class="sc">$</span>AQI)</span>
+<span id="cb76-207"><a href="#cb76-207" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="fu">coef</span>(fit1), <span class="at">col=</span><span class="dv">2</span>, <span class="at">lwd=</span><span class="dv">2</span>)</span>
+<span id="cb76-208"><a href="#cb76-208" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-209"><a href="#cb76-209" aria-hidden="true" tabindex="-1"></a>fit2<span class="ot">&lt;-</span><span class="fu">lm</span>(rate<span class="sc">~</span>date, <span class="at">data=</span>unemp2); <span class="fu">summary</span>(fit2) <span class="co">#no trend</span></span>
+<span id="cb76-210"><a href="#cb76-210" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">x=</span>unemp2<span class="sc">$</span>date, <span class="at">y=</span>unemp2<span class="sc">$</span>rate)</span>
+<span id="cb76-211"><a href="#cb76-211" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="fu">coef</span>(fit2), <span class="at">col=</span><span class="dv">2</span>, <span class="at">lwd=</span><span class="dv">2</span>)</span>
+<span id="cb76-212"><a href="#cb76-212" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-213"><a href="#cb76-213" aria-hidden="true" tabindex="-1"></a>fit3<span class="ot">&lt;-</span><span class="fu">lm</span>(ts3<span class="sc">~</span><span class="fu">seq</span>(<span class="dv">1</span>, <span class="fu">length</span>(ts3), <span class="dv">1</span>)); <span class="fu">summary</span>(fit3) <span class="co">#no trend</span></span>
+<span id="cb76-214"><a href="#cb76-214" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">x=</span><span class="fu">seq</span>(<span class="dv">1</span>, <span class="fu">length</span>(ts3), <span class="dv">1</span>), <span class="at">y=</span>(c<span class="sc">+</span>w))</span>
+<span id="cb76-215"><a href="#cb76-215" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="fu">coef</span>(fit3), <span class="at">col=</span><span class="dv">2</span>, <span class="at">lwd=</span><span class="dv">2</span>)</span>
+<span id="cb76-216"><a href="#cb76-216" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-217"><a href="#cb76-217" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb76-218"><a href="#cb76-218" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-219"><a href="#cb76-219" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-220"><a href="#cb76-220" aria-hidden="true" tabindex="-1"></a><span class="fu">### Non-stationary time series</span></span>
+<span id="cb76-221"><a href="#cb76-221" aria-hidden="true" tabindex="-1"></a>A complement to the stationary series is a non-stationary series, which has a global trend to it, in that it increases or decreases in value over time</span>
+<span id="cb76-222"><a href="#cb76-222" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-223"><a href="#cb76-223" aria-hidden="true" tabindex="-1"></a><span class="fu">### Removing trend in a series</span></span>
+<span id="cb76-224"><a href="#cb76-224" aria-hidden="true" tabindex="-1"></a>Often we want to be able to measure auto-correlation without the trend being present, in that case, we can *de-trend* the data and make the series a stationary series.</span>
+<span id="cb76-225"><a href="#cb76-225" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-226"><a href="#cb76-226" aria-hidden="true" tabindex="-1"></a>If $x_t$ is our time series, we can write it as being a sum of two things, the trend, $\mu_t$ and $y_t$ which is the stationary component.</span>
+<span id="cb76-227"><a href="#cb76-227" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-228"><a href="#cb76-228" aria-hidden="true" tabindex="-1"></a>$$x_t = \mu_t + y_t$$</span>
+<span id="cb76-229"><a href="#cb76-229" aria-hidden="true" tabindex="-1"></a>If the trend is a straight line, then we may have</span>
+<span id="cb76-230"><a href="#cb76-230" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-231"><a href="#cb76-231" aria-hidden="true" tabindex="-1"></a>$$\mu_t = \beta_0 + \beta_1 t$$</span>
+<span id="cb76-232"><a href="#cb76-232" aria-hidden="true" tabindex="-1"></a>which is just a linear regression, and in this case, the stationary component $y_t$ will be the residuals from the model:</span>
+<span id="cb76-233"><a href="#cb76-233" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-236"><a href="#cb76-236" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb76-237"><a href="#cb76-237" aria-hidden="true" tabindex="-1"></a>fit1<span class="ot">&lt;-</span><span class="fu">lm</span>(AQI<span class="sc">~</span>date, <span class="at">data=</span>bexar); <span class="fu">summary</span>(fit1) <span class="co">#negative trend</span></span>
+<span id="cb76-238"><a href="#cb76-238" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">x=</span>bexar<span class="sc">$</span>date, <span class="at">y=</span>bexar<span class="sc">$</span>AQI)</span>
+<span id="cb76-239"><a href="#cb76-239" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="fu">coef</span>(fit1), <span class="at">col=</span><span class="dv">2</span>, <span class="at">lwd=</span><span class="dv">2</span>)</span>
+<span id="cb76-240"><a href="#cb76-240" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-241"><a href="#cb76-241" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">x=</span>bexar<span class="sc">$</span>date, <span class="at">y=</span><span class="fu">resid</span>(fit1), <span class="at">main=</span> <span class="st">"De trended time series of air quality"</span>)</span>
+<span id="cb76-242"><a href="#cb76-242" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(<span class="fu">resid</span>(fit1))</span>
+<span id="cb76-243"><a href="#cb76-243" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb76-244"><a href="#cb76-244" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-245"><a href="#cb76-245" aria-hidden="true" tabindex="-1"></a><span class="fu">### Differencing a time series</span></span>
+<span id="cb76-246"><a href="#cb76-246" aria-hidden="true" tabindex="-1"></a>A way to remove seasonality in a time series is by *differencing* the series. The difference operation is:</span>
+<span id="cb76-247"><a href="#cb76-247" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-248"><a href="#cb76-248" aria-hidden="true" tabindex="-1"></a>$$\nabla^d = (1-B)^d$$</span>
+<span id="cb76-249"><a href="#cb76-249" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-250"><a href="#cb76-250" aria-hidden="true" tabindex="-1"></a>This is just the difference between the value of $x_t$ and the value that occurs $d$ values prior. For example, the *first difference* is often taken to remove seasonality in a series:</span>
+<span id="cb76-251"><a href="#cb76-251" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-254"><a href="#cb76-254" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb76-255"><a href="#cb76-255" aria-hidden="true" tabindex="-1"></a>x<span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span> <span class="dv">10</span></span>
+<span id="cb76-256"><a href="#cb76-256" aria-hidden="true" tabindex="-1"></a>x</span>
+<span id="cb76-257"><a href="#cb76-257" aria-hidden="true" tabindex="-1"></a><span class="fu">diff</span>(x)</span>
+<span id="cb76-258"><a href="#cb76-258" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-259"><a href="#cb76-259" aria-hidden="true" tabindex="-1"></a>x<span class="ot">&lt;-</span>c<span class="sc">+</span>w</span>
+<span id="cb76-260"><a href="#cb76-260" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-261"><a href="#cb76-261" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x)</span>
+<span id="cb76-262"><a href="#cb76-262" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">diff</span>(x))</span>
+<span id="cb76-263"><a href="#cb76-263" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-264"><a href="#cb76-264" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb76-265"><a href="#cb76-265" aria-hidden="true" tabindex="-1"></a>We see that the second plot no longer has the regular cosine wave pattern to it.</span>
+<span id="cb76-266"><a href="#cb76-266" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-267"><a href="#cb76-267" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-268"><a href="#cb76-268" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-269"><a href="#cb76-269" aria-hidden="true" tabindex="-1"></a><span class="fu">## Smoothing a time series</span></span>
+<span id="cb76-270"><a href="#cb76-270" aria-hidden="true" tabindex="-1"></a>One descriptive technique that is commonly used in time series analysis is a smoothing model for the data. There are several kinds of these and we will look at a few next.</span>
+<span id="cb76-271"><a href="#cb76-271" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-272"><a href="#cb76-272" aria-hidden="true" tabindex="-1"></a><span class="fu">### Moving Average of Time Series</span></span>
+<span id="cb76-273"><a href="#cb76-273" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-274"><a href="#cb76-274" aria-hidden="true" tabindex="-1"></a>The moving average of a time series is:</span>
+<span id="cb76-275"><a href="#cb76-275" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-276"><a href="#cb76-276" aria-hidden="true" tabindex="-1"></a>$$ m_t = \sum_{j=-k}^k \alpha_j x_{t-j}$$</span>
+<span id="cb76-277"><a href="#cb76-277" aria-hidden="true" tabindex="-1"></a>This function takes a set of the $k$ observations, centered around $x_t$ and finds the mean of them. You've probably seen a lot of these during the <span class="co">[</span><span class="ot">COVID-19 pandemic</span><span class="co">](https://coronavirus.jhu.edu/data/new-cases)</span></span>
+<span id="cb76-278"><a href="#cb76-278" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-279"><a href="#cb76-279" aria-hidden="true" tabindex="-1"></a>The reason we do this is to try to identify the systematic component or components in the data. If the data are noisy, like the cosine data above:</span>
+<span id="cb76-280"><a href="#cb76-280" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-283"><a href="#cb76-283" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb76-284"><a href="#cb76-284" aria-hidden="true" tabindex="-1"></a><span class="fu">plot.ts</span>(c<span class="sc">+</span><span class="dv">5</span><span class="sc">*</span>w,  <span class="at">main=</span><span class="st">"signal + large noise"</span>)</span>
+<span id="cb76-285"><a href="#cb76-285" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-286"><a href="#cb76-286" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb76-287"><a href="#cb76-287" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-288"><a href="#cb76-288" aria-hidden="true" tabindex="-1"></a>If we take a moving average of the series, we may be able to identify the signal in the noise:</span>
+<span id="cb76-289"><a href="#cb76-289" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-292"><a href="#cb76-292" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb76-293"><a href="#cb76-293" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(c<span class="sc">+</span><span class="dv">5</span><span class="sc">*</span>w,  <span class="at">main=</span><span class="st">"signal + large noise"</span>)</span>
+<span id="cb76-294"><a href="#cb76-294" aria-hidden="true" tabindex="-1"></a>x<span class="ot">=</span>c<span class="sc">+</span><span class="dv">5</span><span class="sc">*</span>w</span>
+<span id="cb76-295"><a href="#cb76-295" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(c, <span class="at">col=</span><span class="dv">1</span>, <span class="at">lty=</span><span class="dv">3</span>)</span>
+<span id="cb76-296"><a href="#cb76-296" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-297"><a href="#cb76-297" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">ma</span>(x, <span class="at">order=</span><span class="dv">5</span>), <span class="at">col=</span><span class="dv">2</span>)<span class="co">#5 day moving average</span></span>
+<span id="cb76-298"><a href="#cb76-298" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">ma</span>(x, <span class="at">order=</span><span class="dv">20</span>), <span class="at">col=</span><span class="dv">3</span>)<span class="co">#20 day moving average</span></span>
+<span id="cb76-299"><a href="#cb76-299" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb76-300"><a href="#cb76-300" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-301"><a href="#cb76-301" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Kernel smoothing</span></span>
+<span id="cb76-302"><a href="#cb76-302" aria-hidden="true" tabindex="-1"></a>Another modern approach is to use a smoothing spline or kernel-based smoother, which</span>
+<span id="cb76-303"><a href="#cb76-303" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-306"><a href="#cb76-306" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb76-307"><a href="#cb76-307" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(c<span class="sc">+</span><span class="dv">5</span><span class="sc">*</span>w,  <span class="at">main=</span><span class="st">"signal + large noise"</span>)</span>
+<span id="cb76-308"><a href="#cb76-308" aria-hidden="true" tabindex="-1"></a>x<span class="ot">=</span>c<span class="sc">+</span><span class="dv">5</span><span class="sc">*</span>w</span>
+<span id="cb76-309"><a href="#cb76-309" aria-hidden="true" tabindex="-1"></a>t<span class="ot">&lt;-</span><span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(x)</span>
+<span id="cb76-310"><a href="#cb76-310" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(c, <span class="at">col=</span><span class="dv">1</span>, <span class="at">lty=</span><span class="dv">3</span>)</span>
+<span id="cb76-311"><a href="#cb76-311" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">ksmooth</span>(<span class="at">x=</span>t, <span class="at">y=</span>x, <span class="st">"normal"</span>, <span class="at">bandwidth=</span><span class="dv">5</span>), <span class="at">col=</span><span class="dv">2</span>)</span>
+<span id="cb76-312"><a href="#cb76-312" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">ksmooth</span>(<span class="at">x=</span>t, <span class="at">y=</span>x, <span class="st">"normal"</span>, <span class="at">bandwidth=</span><span class="dv">10</span>), <span class="at">col=</span><span class="dv">3</span>)</span>
+<span id="cb76-313"><a href="#cb76-313" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">ksmooth</span>(<span class="at">x=</span>t, <span class="at">y=</span>x, <span class="st">"normal"</span>, <span class="at">bandwidth=</span><span class="dv">20</span>), <span class="at">col=</span><span class="dv">4</span>)</span>
+<span id="cb76-314"><a href="#cb76-314" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb76-315"><a href="#cb76-315" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-316"><a href="#cb76-316" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-317"><a href="#cb76-317" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Smoothing splines</span></span>
+<span id="cb76-320"><a href="#cb76-320" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb76-321"><a href="#cb76-321" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(c<span class="sc">+</span><span class="dv">5</span><span class="sc">*</span>w,  <span class="at">main=</span><span class="st">"signal + large noise"</span>)</span>
+<span id="cb76-322"><a href="#cb76-322" aria-hidden="true" tabindex="-1"></a>x<span class="ot">=</span>c<span class="sc">+</span><span class="dv">5</span><span class="sc">*</span>w</span>
+<span id="cb76-323"><a href="#cb76-323" aria-hidden="true" tabindex="-1"></a>t<span class="ot">&lt;-</span><span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(x)</span>
+<span id="cb76-324"><a href="#cb76-324" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(c, <span class="at">col=</span><span class="dv">1</span>, <span class="at">lty=</span><span class="dv">3</span>)</span>
+<span id="cb76-325"><a href="#cb76-325" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">smooth.spline</span>(<span class="at">x=</span>t, <span class="at">y=</span>x, <span class="at">spar=</span><span class="dv">1</span>), <span class="at">col=</span><span class="dv">2</span>)</span>
+<span id="cb76-326"><a href="#cb76-326" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">smooth.spline</span>(<span class="at">x=</span>t, <span class="at">y=</span>x, <span class="at">spar=</span>.<span class="dv">5</span>), <span class="at">col=</span><span class="dv">3</span>)</span>
+<span id="cb76-327"><a href="#cb76-327" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">smooth.spline</span>(<span class="at">x=</span>t, <span class="at">y=</span>x, <span class="at">spar=</span>.<span class="dv">01</span>), <span class="at">col=</span><span class="dv">4</span>)</span>
+<span id="cb76-328"><a href="#cb76-328" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-329"><a href="#cb76-329" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-330"><a href="#cb76-330" aria-hidden="true" tabindex="-1"></a><span class="co">#lines(ksmooth(x=t, y=x, "normal", bandwidth=10), col=3)</span></span>
+<span id="cb76-331"><a href="#cb76-331" aria-hidden="true" tabindex="-1"></a><span class="co">#lines(ksmooth(x=t, y=x, "normal", bandwidth=20), col=4)</span></span>
+<span id="cb76-332"><a href="#cb76-332" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb76-333"><a href="#cb76-333" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-334"><a href="#cb76-334" aria-hidden="true" tabindex="-1"></a><span class="fu">## ARIMA Models</span></span>
+<span id="cb76-335"><a href="#cb76-335" aria-hidden="true" tabindex="-1"></a>One of the fundamental models in time series analysis is the *A*uto*R*egressive *I*ntegrated *M*oving *A*verage</span>
+<span id="cb76-336"><a href="#cb76-336" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-337"><a href="#cb76-337" aria-hidden="true" tabindex="-1"></a>An auto-regressive model is one that predicts a future value, based on weighted average of previous values. The weights will decrease as the distance in time between the current and past values increase.</span>
+<span id="cb76-338"><a href="#cb76-338" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-339"><a href="#cb76-339" aria-hidden="true" tabindex="-1"></a>An auto-regressive model of order *p*, abbreviated **AR(p)** is:</span>
+<span id="cb76-340"><a href="#cb76-340" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-341"><a href="#cb76-341" aria-hidden="true" tabindex="-1"></a>$$x_t = \phi_1 x_{t-1} + \phi_2 x_{t-2}  + \dots +\phi_p x_{t-p} + w_t$$</span>
+<span id="cb76-342"><a href="#cb76-342" aria-hidden="true" tabindex="-1"></a>where, the $\phi_p$ terms represent auto-regressive coefficients and where $w_t$ is a Gaussian white noise residual. The auto-regressive operation can be more succinctly defined using the *Backshift operator*</span>
+<span id="cb76-343"><a href="#cb76-343" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-344"><a href="#cb76-344" aria-hidden="true" tabindex="-1"></a>$$Bx_t = x_{t-1}$$</span>
+<span id="cb76-345"><a href="#cb76-345" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-346"><a href="#cb76-346" aria-hidden="true" tabindex="-1"></a>and we can power this operator up to include greater lags of  $x_t$</span>
+<span id="cb76-347"><a href="#cb76-347" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-348"><a href="#cb76-348" aria-hidden="true" tabindex="-1"></a>$$B^k x_t  = x_{t-k}$$</span>
+<span id="cb76-349"><a href="#cb76-349" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-350"><a href="#cb76-350" aria-hidden="true" tabindex="-1"></a>A commonly used model when modeling temporal dependence is that *AR(1)* model, where the current value of $x$ is predicted using the immediately preceding value:</span>
+<span id="cb76-351"><a href="#cb76-351" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-352"><a href="#cb76-352" aria-hidden="true" tabindex="-1"></a>$$x_t = \sum_{j=0}^\infty \phi^j w_{t-j}$$</span>
+<span id="cb76-353"><a href="#cb76-353" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-354"><a href="#cb76-354" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-355"><a href="#cb76-355" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Moving average models</span></span>
+<span id="cb76-356"><a href="#cb76-356" aria-hidden="true" tabindex="-1"></a>The moving average model of order *q*, or **MA(q)** is :</span>
+<span id="cb76-357"><a href="#cb76-357" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-358"><a href="#cb76-358" aria-hidden="true" tabindex="-1"></a>$$x_t = w_t + \theta_1 w_{t-1} + \theta_2 w_{t-2} + \dots + \theta_q w_{t-q}$$</span>
+<span id="cb76-359"><a href="#cb76-359" aria-hidden="true" tabindex="-1"></a>where the $\theta$ values are lags of the series, of order $q$ and $w_t$ is again Gaussian white noise.</span>
+<span id="cb76-360"><a href="#cb76-360" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-361"><a href="#cb76-361" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-362"><a href="#cb76-362" aria-hidden="true" tabindex="-1"></a><span class="fu">#### ARMA process</span></span>
+<span id="cb76-363"><a href="#cb76-363" aria-hidden="true" tabindex="-1"></a>If we combine these two, we get an *A*uto*R*egressive *M*oving *A*verage, or **ARMA(p,q)** model.</span>
+<span id="cb76-364"><a href="#cb76-364" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-365"><a href="#cb76-365" aria-hidden="true" tabindex="-1"></a>$$x_t = \alpha + \phi_1 x_{t-1} + \phi_2 x_{t-2}  + \dots +\phi_p x_{t-p} + w_t + \theta_1 w_{t-1} + \theta_2 w_{t-2} + \dots + \theta_q w_{t-q} $$</span>
+<span id="cb76-366"><a href="#cb76-366" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-367"><a href="#cb76-367" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-368"><a href="#cb76-368" aria-hidden="true" tabindex="-1"></a>Which just combines the auto-regression and the moving average models.</span>
+<span id="cb76-369"><a href="#cb76-369" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-370"><a href="#cb76-370" aria-hidden="true" tabindex="-1"></a><span class="fu">### ARIMA models</span></span>
+<span id="cb76-371"><a href="#cb76-371" aria-hidden="true" tabindex="-1"></a>If we add a trend component to the time series model, we get the **ARIMA(p,d,q)** model</span>
+<span id="cb76-372"><a href="#cb76-372" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-373"><a href="#cb76-373" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-374"><a href="#cb76-374" aria-hidden="true" tabindex="-1"></a><span class="fu">## Forecasting</span></span>
+<span id="cb76-375"><a href="#cb76-375" aria-hidden="true" tabindex="-1"></a>Forecasting is the process of predicting future values of a variable, based on the observed patterns of the variable from the past. If we have the observed time series, $x_t$, then we may want to predict future values of the series at $m$ periods in the future, $x_{n+m}$</span>
+<span id="cb76-376"><a href="#cb76-376" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-377"><a href="#cb76-377" aria-hidden="true" tabindex="-1"></a>In order to do this, we assume that $x_t$ is stationary and the model parameters are known (but we typically estimate them from the data).</span>
+<span id="cb76-378"><a href="#cb76-378" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-379"><a href="#cb76-379" aria-hidden="true" tabindex="-1"></a>For example, if we want to forecast the air quality in Bexar County in the future, we would first estimate the parameters of the model we want, then apply that model to forecast the future values.</span>
+<span id="cb76-380"><a href="#cb76-380" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-381"><a href="#cb76-381" aria-hidden="true" tabindex="-1"></a>The <span class="in">`forecast`</span> package is a great place to start for basic forecasting models.</span>
+<span id="cb76-382"><a href="#cb76-382" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-383"><a href="#cb76-383" aria-hidden="true" tabindex="-1"></a>Below are some simple methods, see <span class="co">[</span><span class="ot">Hyndmans's ch 3 for these</span><span class="co">](https://otexts.com/fpp2/simple-methods.html)</span></span>
+<span id="cb76-386"><a href="#cb76-386" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb76-387"><a href="#cb76-387" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(forecast)</span>
+<span id="cb76-388"><a href="#cb76-388" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-389"><a href="#cb76-389" aria-hidden="true" tabindex="-1"></a><span class="co">#Simple mean forecast</span></span>
+<span id="cb76-390"><a href="#cb76-390" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">meanf</span>(ts1, <span class="at">h=</span><span class="dv">60</span>))</span>
+<span id="cb76-391"><a href="#cb76-391" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-392"><a href="#cb76-392" aria-hidden="true" tabindex="-1"></a><span class="co">#Naive method - same as the last observation</span></span>
+<span id="cb76-393"><a href="#cb76-393" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">naive</span>(ts1, <span class="at">h=</span><span class="dv">60</span>))</span>
+<span id="cb76-394"><a href="#cb76-394" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">rwf</span>(ts1, <span class="at">h=</span><span class="dv">60</span>))</span>
+<span id="cb76-395"><a href="#cb76-395" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-396"><a href="#cb76-396" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(ts1)<span class="sc">+</span></span>
+<span id="cb76-397"><a href="#cb76-397" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autolayer</span>(<span class="fu">ma</span>(ts1, <span class="dv">30</span>), <span class="at">series=</span><span class="st">"30 day MA"</span>)<span class="sc">+</span></span>
+<span id="cb76-398"><a href="#cb76-398" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Day"</span>)<span class="sc">+</span><span class="fu">ylab</span>(<span class="st">"AQI"</span>)<span class="sc">+</span></span>
+<span id="cb76-399"><a href="#cb76-399" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Air Quality in Bexar county, 30 Day moving average"</span>)</span>
+<span id="cb76-400"><a href="#cb76-400" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-401"><a href="#cb76-401" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb76-402"><a href="#cb76-402" aria-hidden="true" tabindex="-1"></a><span class="fu">## ARIMA forecasting</span></span>
+<span id="cb76-403"><a href="#cb76-403" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-406"><a href="#cb76-406" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb76-407"><a href="#cb76-407" aria-hidden="true" tabindex="-1"></a>ts2 <span class="sc">%&gt;%</span> <span class="fu">stl</span>(<span class="at">s.window=</span><span class="st">'periodic'</span>) <span class="sc">%&gt;%</span> <span class="fu">seasadj</span>() <span class="ot">-&gt;</span> unemp3</span>
+<span id="cb76-408"><a href="#cb76-408" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(unemp3)</span>
+<span id="cb76-409"><a href="#cb76-409" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-410"><a href="#cb76-410" aria-hidden="true" tabindex="-1"></a><span class="co">#first differnce</span></span>
+<span id="cb76-411"><a href="#cb76-411" aria-hidden="true" tabindex="-1"></a>unemp3<span class="sc">%&gt;%</span> <span class="fu">diff</span>() <span class="sc">%&gt;%</span><span class="fu">ggtsdisplay</span>(<span class="at">main=</span><span class="st">"First difference"</span>)</span>
+<span id="cb76-412"><a href="#cb76-412" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-413"><a href="#cb76-413" aria-hidden="true" tabindex="-1"></a><span class="co">#automatically estimate the model parameters</span></span>
+<span id="cb76-414"><a href="#cb76-414" aria-hidden="true" tabindex="-1"></a>fit<span class="ot">&lt;-</span><span class="fu">auto.arima</span>(ts2)</span>
+<span id="cb76-415"><a href="#cb76-415" aria-hidden="true" tabindex="-1"></a>fit</span>
+<span id="cb76-416"><a href="#cb76-416" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-417"><a href="#cb76-417" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(<span class="fu">forecast</span>(fit))</span>
+<span id="cb76-418"><a href="#cb76-418" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-419"><a href="#cb76-419" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-420"><a href="#cb76-420" aria-hidden="true" tabindex="-1"></a>fit2<span class="ot">&lt;-</span><span class="fu">auto.arima</span>(unemp3)</span>
+<span id="cb76-421"><a href="#cb76-421" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(<span class="fu">forecast</span>(fit2))</span>
+<span id="cb76-422"><a href="#cb76-422" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-423"><a href="#cb76-423" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-424"><a href="#cb76-424" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-425"><a href="#cb76-425" aria-hidden="true" tabindex="-1"></a>fit2<span class="sc">%&gt;%</span></span>
+<span id="cb76-426"><a href="#cb76-426" aria-hidden="true" tabindex="-1"></a>  <span class="fu">forecast</span>(<span class="at">h=</span><span class="dv">12</span>)<span class="sc">%&gt;%</span></span>
+<span id="cb76-427"><a href="#cb76-427" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autoplot</span>(<span class="at">main=</span><span class="st">"12 month forecast for unemployment"</span>)</span>
+<span id="cb76-428"><a href="#cb76-428" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-429"><a href="#cb76-429" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-430"><a href="#cb76-430" aria-hidden="true" tabindex="-1"></a>fit3<span class="ot">&lt;-</span><span class="fu">auto.arima</span>(ts1)</span>
+<span id="cb76-431"><a href="#cb76-431" aria-hidden="true" tabindex="-1"></a>fit3<span class="sc">%&gt;%</span></span>
+<span id="cb76-432"><a href="#cb76-432" aria-hidden="true" tabindex="-1"></a>  <span class="fu">forecast</span>(<span class="at">h=</span><span class="dv">60</span>)<span class="sc">%&gt;%</span></span>
+<span id="cb76-433"><a href="#cb76-433" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autoplot</span>(<span class="at">main=</span><span class="st">"60 day forecast of AQI"</span>)</span>
+<span id="cb76-434"><a href="#cb76-434" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-435"><a href="#cb76-435" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb76-436"><a href="#cb76-436" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-437"><a href="#cb76-437" aria-hidden="true" tabindex="-1"></a><span class="fu">## Classical Decomposition</span></span>
+<span id="cb76-438"><a href="#cb76-438" aria-hidden="true" tabindex="-1"></a>One method of exploring the components of a time series is *decomposition*</span>
+<span id="cb76-439"><a href="#cb76-439" aria-hidden="true" tabindex="-1"></a>There are two basic forms of this, *Additive* and *Multiplicative* decomposition.</span>
+<span id="cb76-440"><a href="#cb76-440" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-441"><a href="#cb76-441" aria-hidden="true" tabindex="-1"></a><span class="ss"> - </span>Additive decomposition decomposes the series as:</span>
+<span id="cb76-442"><a href="#cb76-442" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-443"><a href="#cb76-443" aria-hidden="true" tabindex="-1"></a>$$x_t = R_t + T_t + S_t$$</span>
+<span id="cb76-444"><a href="#cb76-444" aria-hidden="true" tabindex="-1"></a>Where $R_t$ is a residual, $T_t$ is the trend of the data and $S_t$ is the seasonal component of the data</span>
+<span id="cb76-445"><a href="#cb76-445" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-448"><a href="#cb76-448" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb76-449"><a href="#cb76-449" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-height: 9</span></span>
+<span id="cb76-450"><a href="#cb76-450" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-width: 8</span></span>
+<span id="cb76-451"><a href="#cb76-451" aria-hidden="true" tabindex="-1"></a>ts2<span class="sc">%&gt;%</span></span>
+<span id="cb76-452"><a href="#cb76-452" aria-hidden="true" tabindex="-1"></a>  <span class="fu">decompose</span>(<span class="at">type=</span><span class="st">"additive"</span>)<span class="sc">%&gt;%</span> <span class="fu">autoplot</span>() <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">"Day"</span>) <span class="sc">+</span></span>
+<span id="cb76-453"><a href="#cb76-453" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Classical additive decomposition</span></span>
+<span id="cb76-454"><a href="#cb76-454" aria-hidden="true" tabindex="-1"></a><span class="st">    of US Unemployment"</span>)</span>
+<span id="cb76-455"><a href="#cb76-455" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb76-456"><a href="#cb76-456" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-457"><a href="#cb76-457" aria-hidden="true" tabindex="-1"></a><span class="ss"> - </span>Multiplicative decomposition: The second form of decomposition is multiplicative, this decomposes the series as:</span>
+<span id="cb76-458"><a href="#cb76-458" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-459"><a href="#cb76-459" aria-hidden="true" tabindex="-1"></a>$$x_t = R_t * T_t * S_t$$</span>
+<span id="cb76-462"><a href="#cb76-462" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb76-463"><a href="#cb76-463" aria-hidden="true" tabindex="-1"></a>ts2<span class="sc">%&gt;%</span></span>
+<span id="cb76-464"><a href="#cb76-464" aria-hidden="true" tabindex="-1"></a>  <span class="fu">decompose</span>(<span class="at">type=</span><span class="st">"multiplicative"</span>)<span class="sc">%&gt;%</span> <span class="fu">autoplot</span>() <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">"Day"</span>) <span class="sc">+</span></span>
+<span id="cb76-465"><a href="#cb76-465" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Classical multiplicative decomposition</span></span>
+<span id="cb76-466"><a href="#cb76-466" aria-hidden="true" tabindex="-1"></a><span class="st">    of US Unemployment"</span>)</span>
+<span id="cb76-467"><a href="#cb76-467" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb76-468"><a href="#cb76-468" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-469"><a href="#cb76-469" aria-hidden="true" tabindex="-1"></a><span class="fu">### Seasonal adjustment</span></span>
+<span id="cb76-470"><a href="#cb76-470" aria-hidden="true" tabindex="-1"></a>In unemployment data, the BLS usually presents the *seasonally adjusted* unemployment rate. This is because there is seasonality in the pattern of unemployment, with some months consistently having higher or lower unemployment. To produce this, they take the series and subtract out the seasonal component, as in the above decomposition.</span>
+<span id="cb76-471"><a href="#cb76-471" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-474"><a href="#cb76-474" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb76-475"><a href="#cb76-475" aria-hidden="true" tabindex="-1"></a>adjust1<span class="ot">&lt;-</span><span class="fu">decompose</span>(ts2,<span class="at">type =</span>  <span class="st">"add"</span>)</span>
+<span id="cb76-476"><a href="#cb76-476" aria-hidden="true" tabindex="-1"></a>adjust2<span class="ot">&lt;-</span>ts2 <span class="sc">-</span> adjust1<span class="sc">$</span>seasonal</span>
+<span id="cb76-477"><a href="#cb76-477" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-478"><a href="#cb76-478" aria-hidden="true" tabindex="-1"></a>test<span class="ot">&lt;-</span><span class="fu">data.frame</span>(<span class="at">month =</span> <span class="fu">unique</span>(unemp2<span class="sc">$</span>date), <span class="at">unemprate =</span> adjust2)</span>
+<span id="cb76-479"><a href="#cb76-479" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-480"><a href="#cb76-480" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>()<span class="sc">+</span><span class="fu">geom_line</span>(<span class="at">data=</span>test, <span class="fu">aes</span>(<span class="at">x=</span>month, <span class="at">y=</span>unemprate, <span class="at">color=</span><span class="st">"green"</span>))<span class="sc">+</span><span class="fu">geom_line</span>(<span class="at">data=</span>unemp2, <span class="fu">aes</span>(<span class="at">x=</span>date, <span class="at">y=</span>rate, <span class="at">color=</span><span class="st">"red"</span>) )<span class="sc">+</span><span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Seasonally Adjusted Unemployment Rate"</span>,</span>
+<span id="cb76-481"><a href="#cb76-481" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"Jan 2000 to June 2020"</span>,</span>
+<span id="cb76-482"><a href="#cb76-482" aria-hidden="true" tabindex="-1"></a>       <span class="at">caption =</span> <span class="st">"Source: IPUMS BLS Monthly Data </span><span class="sc">\n</span><span class="st"> Calculations by Corey S. Sparks, Ph.D."</span>,</span>
+<span id="cb76-483"><a href="#cb76-483" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Month"</span>,</span>
+<span id="cb76-484"><a href="#cb76-484" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Unemployment Rate"</span>)<span class="sc">+</span><span class="fu">theme_minimal</span>()<span class="sc">+</span><span class="fu">scale_color_discrete</span>(<span class="at">name =</span> <span class="st">"Rates"</span>, <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Adjusted"</span>, <span class="st">"Raw"</span>))</span>
+<span id="cb76-485"><a href="#cb76-485" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-486"><a href="#cb76-486" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb76-487"><a href="#cb76-487" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-490"><a href="#cb76-490" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb76-491"><a href="#cb76-491" aria-hidden="true" tabindex="-1"></a>adjust3<span class="ot">&lt;-</span>ts2 <span class="sc">-</span> adjust1<span class="sc">$</span>trend</span>
+<span id="cb76-492"><a href="#cb76-492" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-493"><a href="#cb76-493" aria-hidden="true" tabindex="-1"></a>test<span class="ot">&lt;-</span><span class="fu">data.frame</span>(<span class="at">month =</span> <span class="fu">unique</span>(unemp2<span class="sc">$</span>date), <span class="at">unemprate =</span> adjust3)</span>
+<span id="cb76-494"><a href="#cb76-494" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-495"><a href="#cb76-495" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>()<span class="sc">+</span><span class="fu">geom_line</span>(<span class="at">data=</span>test, <span class="fu">aes</span>(<span class="at">x=</span>month, <span class="at">y=</span>unemprate, <span class="at">color=</span><span class="st">"green"</span>))<span class="sc">+</span><span class="fu">geom_line</span>(<span class="at">data=</span>unemp2, <span class="fu">aes</span>(<span class="at">x=</span>date, <span class="at">y=</span>rate, <span class="at">color=</span><span class="st">"red"</span>) )<span class="sc">+</span><span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Detrended Unemployment Rate"</span>,</span>
+<span id="cb76-496"><a href="#cb76-496" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"Jan 2000 to June 2020"</span>,</span>
+<span id="cb76-497"><a href="#cb76-497" aria-hidden="true" tabindex="-1"></a>       <span class="at">caption =</span> <span class="st">"Source: IPUMS BLS Monthly Data </span><span class="sc">\n</span><span class="st"> Calculations by Corey S. Sparks, Ph.D."</span>,</span>
+<span id="cb76-498"><a href="#cb76-498" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Month"</span>,</span>
+<span id="cb76-499"><a href="#cb76-499" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Unemployment Rate"</span>)<span class="sc">+</span><span class="fu">theme_minimal</span>()<span class="sc">+</span><span class="fu">scale_color_discrete</span>(<span class="at">name =</span> <span class="st">"Rates"</span>, <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Adjusted"</span>, <span class="st">"Raw"</span>))</span>
+<span id="cb76-500"><a href="#cb76-500" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-501"><a href="#cb76-501" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+</code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Predictive Modeling and Quantitative Methods in Demography by Corey Sparks</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/coreysparks/predictive_modeling/edit/main/time-series.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/coreysparks/predictive_modeling/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<p>Built with <a href="https://quarto.org/">Quarto</a></p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

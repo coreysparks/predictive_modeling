@@ -1,0 +1,1846 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Corey Sparks, Ph.D.">
+<meta name="dcterms.date" content="2019-10-29">
+
+<title>4&nbsp; Basic Methods for Classification – Predictive Modeling and Quantitative Methods in Demography</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./classification-cv.html" rel="next">
+<link href="./lasso.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-6f4dde0c9b9e53d219e3db410911c9dc.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar docked quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./basic-classification.html">Classification Methods</a></li><li class="breadcrumb-item"><a href="./basic-classification.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Basic Methods for Classification</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Predictive Modeling and Quantitative Methods in Demography</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/coreysparks/predictive_modeling" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Welcome</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Foundations of Predictive Modeling</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./what-is-predictive-modeling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">What is Predictive Modeling?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./lasso.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Demography Informal Methods Seminar - Lasso and Regularized Regression</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Classification Methods</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./basic-classification.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Basic Methods for Classification</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./classification-cv.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Classification and Cross-Validation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./classification-knn.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Classification with K-Nearest Neighbors</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Unsupervised Learning</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./clustering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Predictive Modeling - Cluster analysis</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Tree-Based and Ensemble Methods</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./random-forests.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Demography Informal Methods Seminar - Classification and Regression Trees</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">Time Series and Demographic Methods</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./time-series.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Demography Informal Methods Seminar - Introduction to Time Series Analysis</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#classification-methods-and-models" id="toc-classification-methods-and-models" class="nav-link active" data-scroll-target="#classification-methods-and-models"><span class="header-section-number">4.1</span> Classification methods and models</a>
+  <ul class="collapse">
+  <li><a href="#using-caret-to-create-training-and-test-sets." id="toc-using-caret-to-create-training-and-test-sets." class="nav-link" data-scroll-target="#using-caret-to-create-training-and-test-sets."><span class="header-section-number">4.1.1</span> using caret to create training and test sets.</a></li>
+  </ul></li>
+  <li><a href="#logistic-regression-for-classification" id="toc-logistic-regression-for-classification" class="nav-link" data-scroll-target="#logistic-regression-for-classification"><span class="header-section-number">4.2</span> Logistic regression for classification</a></li>
+  <li><a href="#regression-partition-tree" id="toc-regression-partition-tree" class="nav-link" data-scroll-target="#regression-partition-tree"><span class="header-section-number">4.3</span> Regression partition tree</a></li>
+  <li><a href="#linear-discriminant-function" id="toc-linear-discriminant-function" class="nav-link" data-scroll-target="#linear-discriminant-function"><span class="header-section-number">4.4</span> Linear discriminant function</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/coreysparks/predictive_modeling/edit/main/basic-classification.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/coreysparks/predictive_modeling/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./basic-classification.html">Classification Methods</a></li><li class="breadcrumb-item"><a href="./basic-classification.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Basic Methods for Classification</span></a></li></ol></nav>
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Basic Methods for Classification</span></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Corey Sparks, Ph.D. </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">October 29, 2019</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="classification-methods-and-models" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="classification-methods-and-models"><span class="header-section-number">4.1</span> Classification methods and models</h2>
+<p>In classification methods, we are typically interested in using some observed characteristics of a case to predict a binary categorical outcome. This can be extended to a multi-category outcome, but the largest number of applications involve a 1/0 outcome.</p>
+<p>Below, we look at a few classic methods of doing this:</p>
+<ul>
+<li><p>Logistic regression</p></li>
+<li><p>Regression/Partitioning Trees</p></li>
+<li><p>Linear Discriminant Functions</p></li>
+</ul>
+<p>There are other methods that we will examine but these are probably the easiest to understand.</p>
+<p>In these examples, we will use the Demographic and Health Survey <a href="https://dhsprogram.com/data/Model-Datasets.cfm">Model Data</a>. These are based on the DHS survey, but are publicly available and are used to practice using the DHS data sets, but don’t represent a real country.</p>
+<p>In this example, we will use the outcome of contraceptive choice (modern vs other/none) as our outcome.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(haven)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>dat<span class="ot">&lt;-</span><span class="fu">url</span>(<span class="st">"https://github.com/coreysparks/data/blob/master/ZZIR62FL.DTA?raw=true"</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>model.dat<span class="ot">&lt;-</span><span class="fu">read_dta</span>(dat)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Here we recode some of our variables and limit our data to those women who are not currently pregnant and who are sexually active.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'dplyr'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:stats':
+
+    filter, lag</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>model.dat2<span class="ot">&lt;-</span>model.dat<span class="sc">%&gt;%</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">region =</span> v024,</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">modcontra=</span> <span class="fu">as.factor</span>(<span class="fu">ifelse</span>(v364 <span class="sc">==</span><span class="dv">1</span>,<span class="dv">1</span>, <span class="dv">0</span>)),</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">age =</span> v012,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>         <span class="at">livchildren=</span>v218,</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>         <span class="at">educ =</span> v106,</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">currpreg=</span>v213,</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>         <span class="at">knowmodern=</span><span class="fu">ifelse</span>(v301<span class="sc">==</span><span class="dv">3</span>, <span class="dv">1</span>, <span class="dv">0</span>),</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>         <span class="at">age2=</span>v012<span class="sc">^</span><span class="dv">2</span>)<span class="sc">%&gt;%</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(currpreg<span class="sc">==</span><span class="dv">0</span>, v536<span class="sc">&gt;</span><span class="dv">0</span>)<span class="sc">%&gt;%</span> <span class="co">#notpreg, sex active</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(caseid, region, modcontra,age, age2,livchildren, educ, knowmodern)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(model.dat2))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">caseid</th>
+<th style="text-align: right;">region</th>
+<th style="text-align: left;">modcontra</th>
+<th style="text-align: right;">age</th>
+<th style="text-align: right;">age2</th>
+<th style="text-align: right;">livchildren</th>
+<th style="text-align: right;">educ</th>
+<th style="text-align: right;">knowmodern</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1 1 2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">900</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">1 4 2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">1764</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">1 4 3</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">625</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">1 5 1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">625</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">1 6 2</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">37</td>
+<td style="text-align: right;">1369</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">1 6 3</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">289</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<section id="using-caret-to-create-training-and-test-sets." class="level3" data-number="4.1.1">
+<h3 data-number="4.1.1" class="anchored" data-anchor-id="using-caret-to-create-training-and-test-sets."><span class="header-section-number">4.1.1</span> using caret to create training and test sets.</h3>
+<p>We use an 80% training fraction</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(caret)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: ggplot2</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: lattice</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1115</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>train<span class="ot">&lt;-</span> <span class="fu">createDataPartition</span>(<span class="at">y =</span> model.dat2<span class="sc">$</span>modcontra , <span class="at">p =</span> .<span class="dv">80</span>, <span class="at">list=</span>F)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>model.dat2train<span class="ot">&lt;-</span>model.dat2[train,]</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>model.dat2test<span class="ot">&lt;-</span>model.dat2[<span class="sc">-</span>train,]</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(model.dat2train<span class="sc">$</span>modcontra)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+   0    1 
+4036 1409 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">prop.table</span>(<span class="fu">table</span>(model.dat2train<span class="sc">$</span>modcontra))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+        0         1 
+0.7412305 0.2587695 </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model.dat2train)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    caseid              region      modcontra      age             age2       
+ Length:5445        Min.   :1.000   0:4036    Min.   :15.00   Min.   : 225.0  
+ Class :character   1st Qu.:1.000   1:1409    1st Qu.:21.00   1st Qu.: 441.0  
+ Mode  :character   Median :2.000             Median :29.00   Median : 841.0  
+                    Mean   :2.164             Mean   :29.78   Mean   : 976.8  
+                    3rd Qu.:3.000             3rd Qu.:37.00   3rd Qu.:1369.0  
+                    Max.   :4.000             Max.   :49.00   Max.   :2401.0  
+  livchildren          educ          knowmodern    
+ Min.   : 0.000   Min.   :0.0000   Min.   :0.0000  
+ 1st Qu.: 1.000   1st Qu.:0.0000   1st Qu.:1.0000  
+ Median : 2.000   Median :0.0000   Median :1.0000  
+ Mean   : 2.546   Mean   :0.7381   Mean   :0.9442  
+ 3rd Qu.: 4.000   3rd Qu.:2.0000   3rd Qu.:1.0000  
+ Max.   :10.000   Max.   :3.0000   Max.   :1.0000  </code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="logistic-regression-for-classification" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="logistic-regression-for-classification"><span class="header-section-number">4.2</span> Logistic regression for classification</h2>
+<p>Here we use a basic binomial GLM to estimate the probability of a woman using modern contraception. We use information on their region of residence, age, number of living children and level of education.</p>
+<p>This model can be written: <span class="math display">\[ln \left ( \frac{Pr(\text{Modern Contraception})}{1-Pr(\text{Modern Contraception})} \right ) = X' \beta\]</span></p>
+<p>Which can be converted to the probability scale via the inverse logit transform:</p>
+<p><span class="math display">\[Pr(\text{Modern Contraception}) = \frac{1}{1+exp (-X' \beta)}\]</span></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>glm1<span class="ot">&lt;-</span><span class="fu">glm</span>(modcontra<span class="sc">~</span><span class="fu">factor</span>(region)<span class="sc">+</span><span class="fu">scale</span>(age)<span class="sc">+</span><span class="fu">scale</span>(age2)<span class="sc">+</span><span class="fu">scale</span>(livchildren)<span class="sc">+</span><span class="fu">factor</span>(educ), <span class="at">data=</span>model.dat2train[,<span class="sc">-</span><span class="dv">1</span>], <span class="at">family =</span> binomial)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(glm1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = modcontra ~ factor(region) + scale(age) + scale(age2) + 
+    scale(livchildren) + factor(educ), family = binomial, data = model.dat2train[, 
+    -1])
+
+Coefficients:
+                   Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)        -1.91240    0.06807 -28.095  &lt; 2e-16 ***
+factor(region)2     0.38755    0.08534   4.541 5.60e-06 ***
+factor(region)3     0.62565    0.09531   6.564 5.23e-11 ***
+factor(region)4     0.30066    0.09454   3.180 0.001471 ** 
+scale(age)          0.63678    0.26540   2.399 0.016425 *  
+scale(age2)        -0.98328    0.26194  -3.754 0.000174 ***
+scale(livchildren)  0.17004    0.05408   3.144 0.001665 ** 
+factor(educ)1       0.43835    0.10580   4.143 3.43e-05 ***
+factor(educ)2       1.38923    0.08646  16.068  &lt; 2e-16 ***
+factor(educ)3       1.54061    0.16086   9.577  &lt; 2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 6226.5  on 5444  degrees of freedom
+Residual deviance: 5629.0  on 5435  degrees of freedom
+AIC: 5649
+
+Number of Fisher Scoring iterations: 4</code></pre>
+</div>
+</div>
+<p>We see that all the predictors are significantly related to our outcome</p>
+<p>Next we see how the model performs in terms of accuracy of prediction. This is new comparison to how we typically use logistic regression.</p>
+<p>We use the <code>predict()</code> function to get the estimated class probabilities for each case</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>tr_pred<span class="ot">&lt;-</span> <span class="fu">predict</span>(glm1, <span class="at">newdata =</span> model.dat2train, <span class="at">type =</span> <span class="st">"response"</span>)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(tr_pred)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         1          2          3          4          5          6 
+0.22002790 0.31137928 0.15091505 0.20389088 0.08726724 0.18808481 </code></pre>
+</div>
+</div>
+<p>These are the estimated probability that each of these women used modern contraception, based on the model.</p>
+<p>In order to create classes (uses modern vs doesn’t use modern contraception) we have to use a <strong>decision rule</strong>. A decision rule is when we choose a cut off point, or <em>threshold</em> value of the probability to classify each observation as belonging to one class or the other.</p>
+<p>A basic decision rule is if <span class="math inline">\(Pr(y=\text{Modern Contraception} |X) &gt;.5\)</span> Then classify the observation as a modern contraception user, and otherwise not. This is what we will use here.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>tr_predcl<span class="ot">&lt;-</span><span class="fu">factor</span>(<span class="fu">ifelse</span>(tr_pred<span class="sc">&gt;</span>.<span class="dv">5</span>, <span class="dv">1</span>, <span class="dv">0</span>))</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>pred1<span class="ot">&lt;-</span><span class="fu">data.frame</span>(<span class="at">pr=</span>tr_pred, <span class="at">gr=</span>tr_predcl, <span class="at">modcon=</span>model.dat2train<span class="sc">$</span>modcontra)</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>pred1<span class="sc">%&gt;%</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>()<span class="sc">+</span><span class="fu">geom_density</span>(<span class="fu">aes</span>(<span class="at">x=</span>pr, <span class="at">color=</span>gr, <span class="at">group=</span>gr))<span class="sc">+</span><span class="fu">ggtitle</span>(<span class="at">label =</span> <span class="st">"Probability of Modern Contraception"</span>, <span class="at">subtitle =</span> <span class="st">"Threshold = .5"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="basic-classification_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>pred1<span class="sc">%&gt;%</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>()<span class="sc">+</span><span class="fu">geom_density</span>(<span class="fu">aes</span>(<span class="at">x=</span>pr, <span class="at">color=</span>modcon, <span class="at">group=</span>modcon))<span class="sc">+</span><span class="fu">ggtitle</span>(<span class="at">label =</span> <span class="st">"Probability of Modern Contraception"</span>, <span class="at">subtitle =</span> <span class="st">"Truth"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="basic-classification_files/figure-html/unnamed-chunk-8-2.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Next we need to see how we did. A simple cross tab of the observed classes versus the predicted classes is called the <strong>confusion matrix</strong>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>( tr_predcl,model.dat2train<span class="sc">$</span>modcontra)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         
+tr_predcl    0    1
+        0 3761 1142
+        1  275  267</code></pre>
+</div>
+</div>
+<p>This is great, but typically it’s easier to understand the model’s predictive ability by converting these to proportions. The <code>confusionMatrix()</code> function in <code>caret</code> can do this, plus other stuff.</p>
+<p>This provides lots of output summarizing the classification results. At its core is the matrix of observed classes versus predicted classes. The confusion matrix maps observed classes versus predicted classes:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th></th>
+<th>Predicted Negative</th>
+<th>Predicted Positive</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Actual Negative</strong></td>
+<td>True Negative (TN)</td>
+<td>False Positive (FP)</td>
+</tr>
+<tr class="even">
+<td><strong>Actual Positive</strong></td>
+<td>False Negative (FN)</td>
+<td>True Positive (TP)</td>
+</tr>
+</tbody>
+</table>
+<p>Lots of information on the predictive accuracy can be found from this 2x2 table. Generally, we are interested in overall accuracy, sensitivity and specificity.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">confusionMatrix</span>(<span class="at">data =</span> tr_predcl,model.dat2train<span class="sc">$</span>modcontra )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Confusion Matrix and Statistics
+
+          Reference
+Prediction    0    1
+         0 3761 1142
+         1  275  267
+                                          
+               Accuracy : 0.7398          
+                 95% CI : (0.7279, 0.7514)
+    No Information Rate : 0.7412          
+    P-Value [Acc &gt; NIR] : 0.6046          
+                                          
+                  Kappa : 0.1517          
+                                          
+ Mcnemar's Test P-Value : &lt;2e-16          
+                                          
+            Sensitivity : 0.9319          
+            Specificity : 0.1895          
+         Pos Pred Value : 0.7671          
+         Neg Pred Value : 0.4926          
+             Prevalence : 0.7412          
+         Detection Rate : 0.6907          
+   Detection Prevalence : 0.9005          
+      Balanced Accuracy : 0.5607          
+                                          
+       'Positive' Class : 0               
+                                          </code></pre>
+</div>
+</div>
+<p>Overall the model has a 73.9% accuracy, which isn’t bad! What is bad is some of the other measures. The sensitivity is really low <code>267/(267+1142) = .189</code>, so we are only predicting the positive class (modern contraception) in 19% of cases correctly. In other word the model is pretty good at predicting if you don’t use modern contraception, <code>3761/(3761+275)= .931</code>, but not at predicting if you do.</p>
+<p>We could try a different decision rule, in this case, I use the mean of the response as the cutoff value.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>tr_predcl<span class="ot">&lt;-</span><span class="fu">factor</span>(<span class="fu">ifelse</span>(tr_pred<span class="sc">&gt;</span>.<span class="dv">258</span>, <span class="dv">1</span>, <span class="dv">0</span>)) <span class="co">#mean of response</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>pred2<span class="ot">&lt;-</span><span class="fu">data.frame</span>(<span class="at">pr=</span>tr_pred, <span class="at">gr=</span>tr_predcl, <span class="at">modcon=</span>model.dat2train<span class="sc">$</span>modcontra)</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>pred2<span class="sc">%&gt;%</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>()<span class="sc">+</span><span class="fu">geom_density</span>(<span class="fu">aes</span>(<span class="at">x=</span>pr, <span class="at">color=</span>gr, <span class="at">group=</span>gr))<span class="sc">+</span><span class="fu">ggtitle</span>(<span class="at">label =</span> <span class="st">"Probability of Modern Contraception"</span>, <span class="at">subtitle =</span> <span class="st">"Threshold = .258"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="basic-classification_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>pred2<span class="sc">%&gt;%</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>()<span class="sc">+</span><span class="fu">geom_density</span>(<span class="fu">aes</span>(<span class="at">x=</span>pr, <span class="at">color=</span>modcon, <span class="at">group=</span>modcon))<span class="sc">+</span><span class="fu">ggtitle</span>(<span class="at">label =</span> <span class="st">"Probability of Modern Contraception"</span>, <span class="at">subtitle =</span> <span class="st">"Truth"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="basic-classification_files/figure-html/unnamed-chunk-11-2.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">confusionMatrix</span>(<span class="at">data =</span> tr_predcl,model.dat2train<span class="sc">$</span>modcontra, <span class="at">positive =</span> <span class="st">"1"</span> )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Confusion Matrix and Statistics
+
+          Reference
+Prediction    0    1
+         0 2944  577
+         1 1092  832
+                                         
+               Accuracy : 0.6935         
+                 95% CI : (0.681, 0.7057)
+    No Information Rate : 0.7412         
+    P-Value [Acc &gt; NIR] : 1              
+                                         
+                  Kappa : 0.2859         
+                                         
+ Mcnemar's Test P-Value : &lt;2e-16         
+                                         
+            Sensitivity : 0.5905         
+            Specificity : 0.7294         
+         Pos Pred Value : 0.4324         
+         Neg Pred Value : 0.8361         
+             Prevalence : 0.2588         
+         Detection Rate : 0.1528         
+   Detection Prevalence : 0.3534         
+      Balanced Accuracy : 0.6600         
+                                         
+       'Positive' Class : 1              
+                                         </code></pre>
+</div>
+</div>
+<p>Which drops the accuracy a little, but increases the specificity at the cost of the sensitivity.</p>
+<p>Next we do this on the test set to evaluate model performance outside of the training data</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>pred_test<span class="ot">&lt;-</span><span class="fu">predict</span>(glm1, <span class="at">newdata=</span>model.dat2test, <span class="at">type=</span><span class="st">"response"</span>)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>pred_cl<span class="ot">&lt;-</span><span class="fu">factor</span>(<span class="fu">ifelse</span>(pred_test<span class="sc">&gt;</span>.<span class="dv">28</span>, <span class="dv">1</span>, <span class="dv">0</span>))</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(model.dat2test<span class="sc">$</span>modcontra,pred_cl)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   pred_cl
+      0   1
+  0 746 262
+  1 160 192</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">confusionMatrix</span>(<span class="at">data =</span> pred_cl,model.dat2test<span class="sc">$</span>modcontra )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Confusion Matrix and Statistics
+
+          Reference
+Prediction   0   1
+         0 746 160
+         1 262 192
+                                          
+               Accuracy : 0.6897          
+                 95% CI : (0.6644, 0.7142)
+    No Information Rate : 0.7412          
+    P-Value [Acc &gt; NIR] : 1               
+                                          
+                  Kappa : 0.2609          
+                                          
+ Mcnemar's Test P-Value : 8.806e-07       
+                                          
+            Sensitivity : 0.7401          
+            Specificity : 0.5455          
+         Pos Pred Value : 0.8234          
+         Neg Pred Value : 0.4229          
+             Prevalence : 0.7412          
+         Detection Rate : 0.5485          
+   Detection Prevalence : 0.6662          
+      Balanced Accuracy : 0.6428          
+                                          
+       'Positive' Class : 0               
+                                          </code></pre>
+</div>
+</div>
+</section>
+<section id="regression-partition-tree" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="regression-partition-tree"><span class="header-section-number">4.3</span> Regression partition tree</h2>
+<p>As we saw in the first working group example, the regression tree is another common technique used in classification problems. Regression or classification trees attempt to find optimal splits in the data that maximize classification accuracy.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rpart)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rpart.plot)</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>rp1<span class="ot">&lt;-</span><span class="fu">rpart</span>(modcontra<span class="sc">~</span><span class="fu">factor</span>(region)<span class="sc">+</span>(age)<span class="sc">+</span>livchildren<span class="sc">+</span><span class="fu">factor</span>(educ),</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>           <span class="at">data=</span>model.dat2train,</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>           <span class="at">method =</span><span class="st">"class"</span>,</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>           <span class="at">control =</span> <span class="fu">rpart.control</span>(<span class="at">minbucket =</span> <span class="dv">10</span>, <span class="at">cp=</span>.<span class="dv">01</span>)) <span class="co">#lower CP parameter makes for more complicated tree</span></span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(rp1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Call:
+rpart(formula = modcontra ~ factor(region) + (age) + livchildren + 
+    factor(educ), data = model.dat2train, method = "class", control = rpart.control(minbucket = 10, 
+    cp = 0.01))
+  n= 5445 
+
+          CP nsplit rel error    xerror       xstd
+1 0.04009936      0 1.0000000 1.0000000 0.02293618
+2 0.01100071      2 0.9198013 0.9198013 0.02230305
+3 0.01000000      4 0.8977999 0.9169624 0.02227934
+
+Variable importance
+  factor(educ)    livchildren            age factor(region) 
+            58             23             19              1 
+
+Node number 1: 5445 observations,    complexity param=0.04009936
+  predicted class=0  expected loss=0.2587695  P(node) =1
+    class counts:  4036  1409
+   probabilities: 0.741 0.259 
+  left son=2 (3862 obs) right son=3 (1583 obs)
+  Primary splits:
+      factor(educ)   splits as  LLRR,     improve=189.73590, (0 missing)
+      livchildren    &lt; 0.5  to the right, improve= 84.51811, (0 missing)
+      age            &lt; 23.5 to the right, improve= 52.42664, (0 missing)
+      factor(region) splits as  LLRL,     improve= 36.53020, (0 missing)
+  Surrogate splits:
+      livchildren    &lt; 0.5  to the right, agree=0.772, adj=0.215, (0 split)
+      age            &lt; 19.5 to the right, agree=0.753, adj=0.149, (0 split)
+      factor(region) splits as  LLRL,     agree=0.713, adj=0.014, (0 split)
+
+Node number 2: 3862 observations
+  predicted class=0  expected loss=0.174262  P(node) =0.7092746
+    class counts:  3189   673
+   probabilities: 0.826 0.174 
+
+Node number 3: 1583 observations,    complexity param=0.04009936
+  predicted class=0  expected loss=0.46494  P(node) =0.2907254
+    class counts:   847   736
+   probabilities: 0.535 0.465 
+  left son=6 (868 obs) right son=7 (715 obs)
+  Primary splits:
+      livchildren    &lt; 0.5  to the right, improve=33.940940, (0 missing)
+      age            &lt; 36.5 to the right, improve=20.441730, (0 missing)
+      factor(region) splits as  LRRL,     improve= 2.382434, (0 missing)
+      factor(educ)   splits as  --LR,     improve= 0.556353, (0 missing)
+  Surrogate splits:
+      age &lt; 20.5 to the right, agree=0.749, adj=0.443, (0 split)
+
+Node number 6: 868 observations
+  predicted class=0  expected loss=0.3709677  P(node) =0.1594123
+    class counts:   546   322
+   probabilities: 0.629 0.371 
+
+Node number 7: 715 observations,    complexity param=0.01100071
+  predicted class=1  expected loss=0.420979  P(node) =0.1313131
+    class counts:   301   414
+   probabilities: 0.421 0.579 
+  left son=14 (14 obs) right son=15 (701 obs)
+  Primary splits:
+      age            &lt; 32.5 to the right, improve=9.574909, (0 missing)
+      factor(educ)   splits as  --LR,     improve=1.650766, (0 missing)
+      factor(region) splits as  LRRL,     improve=1.324512, (0 missing)
+
+Node number 14: 14 observations
+  predicted class=0  expected loss=0  P(node) =0.002571166
+    class counts:    14     0
+   probabilities: 1.000 0.000 
+
+Node number 15: 701 observations,    complexity param=0.01100071
+  predicted class=1  expected loss=0.4094151  P(node) =0.128742
+    class counts:   287   414
+   probabilities: 0.409 0.591 
+  left son=30 (137 obs) right son=31 (564 obs)
+  Primary splits:
+      age            &lt; 16.5 to the left,  improve=7.933444, (0 missing)
+      factor(educ)   splits as  --LR,     improve=2.545437, (0 missing)
+      factor(region) splits as  LRRL,     improve=1.768127, (0 missing)
+
+Node number 30: 137 observations
+  predicted class=0  expected loss=0.4379562  P(node) =0.0251607
+    class counts:    77    60
+   probabilities: 0.562 0.438 
+
+Node number 31: 564 observations
+  predicted class=1  expected loss=0.3723404  P(node) =0.1035813
+    class counts:   210   354
+   probabilities: 0.372 0.628 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rpart.plot</span>(rp1, <span class="at">type =</span> <span class="dv">4</span>,<span class="at">extra=</span><span class="dv">4</span>,</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="at">box.palette=</span><span class="st">"GnBu"</span>,</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="at">shadow.col=</span><span class="st">"gray"</span>,</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a><span class="at">nn=</span><span class="cn">TRUE</span>, <span class="at">main=</span><span class="st">"Classification tree for using modern contraception"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="basic-classification_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Each node box displays the classification, the probability of each class at that node (i.e.&nbsp;the probability of the class conditioned on the node) and the percentage of observations used at that node. <a href="https://blog.revolutionanalytics.com/2013/06/plotting-classification-and-regression-trees-with-plotrpart.html">From here</a>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>predrp1<span class="ot">&lt;-</span><span class="fu">predict</span>(rp1, <span class="at">newdata=</span>model.dat2train, <span class="at">type =</span> <span class="st">"class"</span>)</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="fu">confusionMatrix</span>(<span class="at">data =</span> predrp1,model.dat2train<span class="sc">$</span>modcontra )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Confusion Matrix and Statistics
+
+          Reference
+Prediction    0    1
+         0 3826 1055
+         1  210  354
+                                          
+               Accuracy : 0.7677          
+                 95% CI : (0.7562, 0.7788)
+    No Information Rate : 0.7412          
+    P-Value [Acc &gt; NIR] : 3.566e-06       
+                                          
+                  Kappa : 0.2475          
+                                          
+ Mcnemar's Test P-Value : &lt; 2.2e-16       
+                                          
+            Sensitivity : 0.9480          
+            Specificity : 0.2512          
+         Pos Pred Value : 0.7839          
+         Neg Pred Value : 0.6277          
+             Prevalence : 0.7412          
+         Detection Rate : 0.7027          
+   Detection Prevalence : 0.8964          
+      Balanced Accuracy : 0.5996          
+                                          
+       'Positive' Class : 0               
+                                          </code></pre>
+</div>
+</div>
+<p>We see the regression tree is performing a little better than the logistic regression on the test case using the summary below:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>pred_testrp<span class="ot">&lt;-</span><span class="fu">predict</span>(rp1, <span class="at">newdata=</span>model.dat2test, <span class="at">type=</span><span class="st">"class"</span>)</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a><span class="fu">confusionMatrix</span>(<span class="at">data =</span> pred_testrp,model.dat2test<span class="sc">$</span>modcontra )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Confusion Matrix and Statistics
+
+          Reference
+Prediction   0   1
+         0 947 263
+         1  61  89
+                                          
+               Accuracy : 0.7618          
+                 95% CI : (0.7382, 0.7842)
+    No Information Rate : 0.7412          
+    P-Value [Acc &gt; NIR] : 0.0434          
+                                          
+                  Kappa : 0.2365          
+                                          
+ Mcnemar's Test P-Value : &lt;2e-16          
+                                          
+            Sensitivity : 0.9395          
+            Specificity : 0.2528          
+         Pos Pred Value : 0.7826          
+         Neg Pred Value : 0.5933          
+             Prevalence : 0.7412          
+         Detection Rate : 0.6963          
+   Detection Prevalence : 0.8897          
+      Balanced Accuracy : 0.5962          
+                                          
+       'Positive' Class : 0               
+                                          </code></pre>
+</div>
+</div>
+</section>
+<section id="linear-discriminant-function" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="linear-discriminant-function"><span class="header-section-number">4.4</span> Linear discriminant function</h2>
+<p>Linear discriminant functions attempt to separate classes from each other using a strictly linear function of the variables. It attempts to reduce the dimensionality of the original data to a single linear function of the input variables, or the <em>discriminant function</em>. This is very similar to what PCA does when it creates a principal component, although in LDA, the function uses this linear transformation of the data to optimally separate classes.</p>
+<p>In this case it performs better than the logistic regression but not as well as the regression tree.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'MASS'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following object is masked from 'package:dplyr':
+
+    select</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>lda1<span class="ot">&lt;-</span><span class="fu">lda</span>(modcontra<span class="sc">~</span><span class="fu">factor</span>(region)<span class="sc">+</span><span class="fu">scale</span>(age)<span class="sc">+</span>livchildren<span class="sc">+</span><span class="fu">factor</span>(educ), <span class="at">data=</span>model.dat2train,<span class="at">prior=</span><span class="fu">c</span>(.<span class="dv">74</span>, .<span class="dv">26</span>) , <span class="at">CV=</span>T)</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>pred_ld1<span class="ot">&lt;-</span>lda1<span class="sc">$</span>class</span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(lda1<span class="sc">$</span>posterior) <span class="co">#probabilities of membership in each group</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>          0         1
+1 0.8153664 0.1846336
+2 0.7387134 0.2612866
+3 0.8673284 0.1326716
+4 0.8080069 0.1919931
+5 0.8976027 0.1023973
+6 0.8387015 0.1612985</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>ld1<span class="ot">&lt;-</span><span class="fu">data.frame</span>(<span class="at">ppmod=</span> lda1<span class="sc">$</span>posterior[, <span class="dv">2</span>],<span class="at">pred=</span>lda1<span class="sc">$</span>class, <span class="at">real=</span>model.dat2train<span class="sc">$</span>modcontra)</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>ld1<span class="sc">%&gt;%</span></span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>()<span class="sc">+</span><span class="fu">geom_density</span>(<span class="fu">aes</span>(<span class="at">x=</span>ppmod, <span class="at">group=</span>pred, <span class="at">color=</span>pred))<span class="sc">+</span><span class="fu">ggtitle</span>(<span class="at">label =</span> <span class="st">"Probabilities of class membership on the linear discriminant function"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="basic-classification_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>ld1<span class="sc">%&gt;%</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>()<span class="sc">+</span><span class="fu">geom_density</span>(<span class="fu">aes</span>(<span class="at">x=</span>ppmod, <span class="at">group=</span>real, <span class="at">color=</span>real))<span class="sc">+</span><span class="fu">ggtitle</span>(<span class="at">label =</span> <span class="st">"Probabilities of class membership and the real class"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="basic-classification_files/figure-html/unnamed-chunk-17-2.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Accuracy on the training set</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">confusionMatrix</span>(pred_ld1,model.dat2train<span class="sc">$</span>modcontra )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Confusion Matrix and Statistics
+
+          Reference
+Prediction    0    1
+         0 3625 1000
+         1  411  409
+                                         
+               Accuracy : 0.7409         
+                 95% CI : (0.729, 0.7525)
+    No Information Rate : 0.7412         
+    P-Value [Acc &gt; NIR] : 0.5318         
+                                         
+                  Kappa : 0.2181         
+                                         
+ Mcnemar's Test P-Value : &lt;2e-16         
+                                         
+            Sensitivity : 0.8982         
+            Specificity : 0.2903         
+         Pos Pred Value : 0.7838         
+         Neg Pred Value : 0.4988         
+             Prevalence : 0.7412         
+         Detection Rate : 0.6657         
+   Detection Prevalence : 0.8494         
+      Balanced Accuracy : 0.5942         
+                                         
+       'Positive' Class : 0              
+                                         </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>lda1<span class="ot">&lt;-</span><span class="fu">lda</span>(modcontra<span class="sc">~</span><span class="fu">factor</span>(region)<span class="sc">+</span><span class="fu">scale</span>(age)<span class="sc">+</span>livchildren<span class="sc">+</span><span class="fu">factor</span>(educ), <span class="at">data=</span>model.dat2train,<span class="at">prior=</span><span class="fu">c</span>(.<span class="dv">74</span>, .<span class="dv">26</span>) )</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a><span class="co">#linear discriminant function</span></span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>lda1<span class="sc">$</span>scaling</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                       LD1
+factor(region)2  0.4580587
+factor(region)3  0.8545973
+factor(region)4  0.3495414
+scale(age)      -0.3873869
+livchildren      0.1025140
+factor(educ)1    0.4535731
+factor(educ)2    1.9263226
+factor(educ)3    2.2956187</code></pre>
+</div>
+</div>
+<p>Accuracy on the test set</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>pred_ld2<span class="ot">&lt;-</span><span class="fu">predict</span>(lda1, model.dat2test)</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a><span class="fu">confusionMatrix</span>(pred_ld2<span class="sc">$</span>class, model.dat2test<span class="sc">$</span>modcontra)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Confusion Matrix and Statistics
+
+          Reference
+Prediction   0   1
+         0 906 254
+         1 102  98
+                                         
+               Accuracy : 0.7382         
+                 95% CI : (0.714, 0.7614)
+    No Information Rate : 0.7412         
+    P-Value [Acc &gt; NIR] : 0.6115         
+                                         
+                  Kappa : 0.2062         
+                                         
+ Mcnemar's Test P-Value : 1.214e-15      
+                                         
+            Sensitivity : 0.8988         
+            Specificity : 0.2784         
+         Pos Pred Value : 0.7810         
+         Neg Pred Value : 0.4900         
+             Prevalence : 0.7412         
+         Detection Rate : 0.6662         
+   Detection Prevalence : 0.8529         
+      Balanced Accuracy : 0.5886         
+                                         
+       'Positive' Class : 0              
+                                         </code></pre>
+</div>
+</div>
+
+
+<!-- -->
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+        for (let i=0; i<detailsSrc.length; i++) {
+          const details = detailsSrc[i].parentElement;
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./lasso.html" class="pagination-link" aria-label="Demography Informal Methods Seminar - Lasso and Regularized Regression">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Demography Informal Methods Seminar - Lasso and Regularized Regression</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./classification-cv.html" class="pagination-link" aria-label="Classification and Cross-Validation">
+        <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Classification and Cross-Validation</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb55" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Basic Methods for Classification"</span></span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> "Corey Sparks, Ph.D."</span></span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a><span class="an">date:</span><span class="co"> "10/29/2019"</span></span>
+<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-7"><a href="#cb55-7" aria-hidden="true" tabindex="-1"></a><span class="in">```{r setup, include=FALSE}</span></span>
+<span id="cb55-8"><a href="#cb55-8" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span>opts_chunk<span class="sc">$</span><span class="fu">set</span>(<span class="at">echo =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb55-9"><a href="#cb55-9" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb55-10"><a href="#cb55-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-11"><a href="#cb55-11" aria-hidden="true" tabindex="-1"></a><span class="fu">## Classification methods and models</span></span>
+<span id="cb55-12"><a href="#cb55-12" aria-hidden="true" tabindex="-1"></a>In classification methods, we are typically interested in using some observed characteristics of a case to predict a binary categorical outcome. This can be extended to a multi-category outcome, but the largest number of applications involve a 1/0 outcome.</span>
+<span id="cb55-13"><a href="#cb55-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-14"><a href="#cb55-14" aria-hidden="true" tabindex="-1"></a>Below, we look at a few classic methods of doing this:</span>
+<span id="cb55-15"><a href="#cb55-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-16"><a href="#cb55-16" aria-hidden="true" tabindex="-1"></a><span class="ss"> - </span>Logistic regression</span>
+<span id="cb55-17"><a href="#cb55-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-18"><a href="#cb55-18" aria-hidden="true" tabindex="-1"></a><span class="ss"> - </span>Regression/Partitioning Trees</span>
+<span id="cb55-19"><a href="#cb55-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-20"><a href="#cb55-20" aria-hidden="true" tabindex="-1"></a><span class="ss"> - </span>Linear Discriminant Functions</span>
+<span id="cb55-21"><a href="#cb55-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-22"><a href="#cb55-22" aria-hidden="true" tabindex="-1"></a>There are other methods that we will examine but these are probably the easiest to understand.</span>
+<span id="cb55-23"><a href="#cb55-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-24"><a href="#cb55-24" aria-hidden="true" tabindex="-1"></a>In these examples, we will use the Demographic and Health Survey <span class="co">[</span><span class="ot">Model Data</span><span class="co">](https://dhsprogram.com/data/Model-Datasets.cfm)</span>. These are based on the DHS survey, but are publicly available and are used to practice using the DHS data sets, but don't represent a real country.</span>
+<span id="cb55-25"><a href="#cb55-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-26"><a href="#cb55-26" aria-hidden="true" tabindex="-1"></a>In this example, we will use the outcome of contraceptive choice (modern vs other/none) as our outcome.</span>
+<span id="cb55-27"><a href="#cb55-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-28"><a href="#cb55-28" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, warning=TRUE}</span></span>
+<span id="cb55-29"><a href="#cb55-29" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(haven)</span>
+<span id="cb55-30"><a href="#cb55-30" aria-hidden="true" tabindex="-1"></a>dat<span class="ot">&lt;-</span><span class="fu">url</span>(<span class="st">"https://github.com/coreysparks/data/blob/master/ZZIR62FL.DTA?raw=true"</span>)</span>
+<span id="cb55-31"><a href="#cb55-31" aria-hidden="true" tabindex="-1"></a>model.dat<span class="ot">&lt;-</span><span class="fu">read_dta</span>(dat)</span>
+<span id="cb55-32"><a href="#cb55-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-33"><a href="#cb55-33" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb55-34"><a href="#cb55-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-35"><a href="#cb55-35" aria-hidden="true" tabindex="-1"></a>Here we recode some of our variables and limit our data to those women who are not currently pregnant and who are sexually active.</span>
+<span id="cb55-36"><a href="#cb55-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-39"><a href="#cb55-39" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb55-40"><a href="#cb55-40" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb55-41"><a href="#cb55-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-42"><a href="#cb55-42" aria-hidden="true" tabindex="-1"></a>model.dat2<span class="ot">&lt;-</span>model.dat<span class="sc">%&gt;%</span></span>
+<span id="cb55-43"><a href="#cb55-43" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">region =</span> v024,</span>
+<span id="cb55-44"><a href="#cb55-44" aria-hidden="true" tabindex="-1"></a>         <span class="at">modcontra=</span> <span class="fu">as.factor</span>(<span class="fu">ifelse</span>(v364 <span class="sc">==</span><span class="dv">1</span>,<span class="dv">1</span>, <span class="dv">0</span>)),</span>
+<span id="cb55-45"><a href="#cb55-45" aria-hidden="true" tabindex="-1"></a>         <span class="at">age =</span> v012,</span>
+<span id="cb55-46"><a href="#cb55-46" aria-hidden="true" tabindex="-1"></a>         <span class="at">livchildren=</span>v218,</span>
+<span id="cb55-47"><a href="#cb55-47" aria-hidden="true" tabindex="-1"></a>         <span class="at">educ =</span> v106,</span>
+<span id="cb55-48"><a href="#cb55-48" aria-hidden="true" tabindex="-1"></a>         <span class="at">currpreg=</span>v213,</span>
+<span id="cb55-49"><a href="#cb55-49" aria-hidden="true" tabindex="-1"></a>         <span class="at">knowmodern=</span><span class="fu">ifelse</span>(v301<span class="sc">==</span><span class="dv">3</span>, <span class="dv">1</span>, <span class="dv">0</span>),</span>
+<span id="cb55-50"><a href="#cb55-50" aria-hidden="true" tabindex="-1"></a>         <span class="at">age2=</span>v012<span class="sc">^</span><span class="dv">2</span>)<span class="sc">%&gt;%</span></span>
+<span id="cb55-51"><a href="#cb55-51" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(currpreg<span class="sc">==</span><span class="dv">0</span>, v536<span class="sc">&gt;</span><span class="dv">0</span>)<span class="sc">%&gt;%</span> <span class="co">#notpreg, sex active</span></span>
+<span id="cb55-52"><a href="#cb55-52" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(caseid, region, modcontra,age, age2,livchildren, educ, knowmodern)</span>
+<span id="cb55-53"><a href="#cb55-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-54"><a href="#cb55-54" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb55-55"><a href="#cb55-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-56"><a href="#cb55-56" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, results='asis'}</span></span>
+<span id="cb55-57"><a href="#cb55-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-58"><a href="#cb55-58" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">head</span>(model.dat2))</span>
+<span id="cb55-59"><a href="#cb55-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-60"><a href="#cb55-60" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb55-61"><a href="#cb55-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-62"><a href="#cb55-62" aria-hidden="true" tabindex="-1"></a><span class="fu">### using caret to create training and test sets.</span></span>
+<span id="cb55-63"><a href="#cb55-63" aria-hidden="true" tabindex="-1"></a>We use an 80% training fraction</span>
+<span id="cb55-64"><a href="#cb55-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-67"><a href="#cb55-67" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb55-68"><a href="#cb55-68" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(caret)</span>
+<span id="cb55-69"><a href="#cb55-69" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1115</span>)</span>
+<span id="cb55-70"><a href="#cb55-70" aria-hidden="true" tabindex="-1"></a>train<span class="ot">&lt;-</span> <span class="fu">createDataPartition</span>(<span class="at">y =</span> model.dat2<span class="sc">$</span>modcontra , <span class="at">p =</span> .<span class="dv">80</span>, <span class="at">list=</span>F)</span>
+<span id="cb55-71"><a href="#cb55-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-72"><a href="#cb55-72" aria-hidden="true" tabindex="-1"></a>model.dat2train<span class="ot">&lt;-</span>model.dat2[train,]</span>
+<span id="cb55-73"><a href="#cb55-73" aria-hidden="true" tabindex="-1"></a>model.dat2test<span class="ot">&lt;-</span>model.dat2[<span class="sc">-</span>train,]</span>
+<span id="cb55-74"><a href="#cb55-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-75"><a href="#cb55-75" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(model.dat2train<span class="sc">$</span>modcontra)</span>
+<span id="cb55-76"><a href="#cb55-76" aria-hidden="true" tabindex="-1"></a><span class="fu">prop.table</span>(<span class="fu">table</span>(model.dat2train<span class="sc">$</span>modcontra))</span>
+<span id="cb55-77"><a href="#cb55-77" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb55-80"><a href="#cb55-80" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb55-81"><a href="#cb55-81" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model.dat2train)</span>
+<span id="cb55-82"><a href="#cb55-82" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb55-83"><a href="#cb55-83" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-84"><a href="#cb55-84" aria-hidden="true" tabindex="-1"></a><span class="fu">## Logistic regression for classification</span></span>
+<span id="cb55-85"><a href="#cb55-85" aria-hidden="true" tabindex="-1"></a>Here we use a basic binomial GLM to estimate the probability of a woman using modern contraception. We use information on their region of residence, age, number of living children and level of education.</span>
+<span id="cb55-86"><a href="#cb55-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-87"><a href="#cb55-87" aria-hidden="true" tabindex="-1"></a>This model can be written:</span>
+<span id="cb55-88"><a href="#cb55-88" aria-hidden="true" tabindex="-1"></a>$$ln \left ( \frac{Pr(\text{Modern Contraception})}{1-Pr(\text{Modern Contraception})} \right ) = X' \beta$$</span>
+<span id="cb55-89"><a href="#cb55-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-90"><a href="#cb55-90" aria-hidden="true" tabindex="-1"></a>Which can be converted to the probability scale via the inverse logit transform:</span>
+<span id="cb55-91"><a href="#cb55-91" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-92"><a href="#cb55-92" aria-hidden="true" tabindex="-1"></a>$$Pr(\text{Modern Contraception}) = \frac{1}{1+exp (-X' \beta)}$$</span>
+<span id="cb55-93"><a href="#cb55-93" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-96"><a href="#cb55-96" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb55-97"><a href="#cb55-97" aria-hidden="true" tabindex="-1"></a>glm1<span class="ot">&lt;-</span><span class="fu">glm</span>(modcontra<span class="sc">~</span><span class="fu">factor</span>(region)<span class="sc">+</span><span class="fu">scale</span>(age)<span class="sc">+</span><span class="fu">scale</span>(age2)<span class="sc">+</span><span class="fu">scale</span>(livchildren)<span class="sc">+</span><span class="fu">factor</span>(educ), <span class="at">data=</span>model.dat2train[,<span class="sc">-</span><span class="dv">1</span>], <span class="at">family =</span> binomial)</span>
+<span id="cb55-98"><a href="#cb55-98" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(glm1)</span>
+<span id="cb55-99"><a href="#cb55-99" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-100"><a href="#cb55-100" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-101"><a href="#cb55-101" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb55-102"><a href="#cb55-102" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-103"><a href="#cb55-103" aria-hidden="true" tabindex="-1"></a>We see that all the predictors are significantly related to our outcome</span>
+<span id="cb55-104"><a href="#cb55-104" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-105"><a href="#cb55-105" aria-hidden="true" tabindex="-1"></a>Next we see how the model performs in terms of accuracy of prediction. This is new comparison to how we typically use logistic regression.</span>
+<span id="cb55-106"><a href="#cb55-106" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-107"><a href="#cb55-107" aria-hidden="true" tabindex="-1"></a>We use the <span class="in">`predict()`</span> function to get the estimated class probabilities for each case</span>
+<span id="cb55-108"><a href="#cb55-108" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-111"><a href="#cb55-111" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb55-112"><a href="#cb55-112" aria-hidden="true" tabindex="-1"></a>tr_pred<span class="ot">&lt;-</span> <span class="fu">predict</span>(glm1, <span class="at">newdata =</span> model.dat2train, <span class="at">type =</span> <span class="st">"response"</span>)</span>
+<span id="cb55-113"><a href="#cb55-113" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(tr_pred)</span>
+<span id="cb55-114"><a href="#cb55-114" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-115"><a href="#cb55-115" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb55-116"><a href="#cb55-116" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-117"><a href="#cb55-117" aria-hidden="true" tabindex="-1"></a>These are the estimated probability that each of these women used modern contraception, based on the model.</span>
+<span id="cb55-118"><a href="#cb55-118" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-119"><a href="#cb55-119" aria-hidden="true" tabindex="-1"></a>In order to create classes (uses modern vs doesn't use modern contraception) we have to use a **decision rule**. A decision rule is when we choose a cut off point, or *threshold* value of the probability to classify each observation as belonging to one class or the other.</span>
+<span id="cb55-120"><a href="#cb55-120" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-121"><a href="#cb55-121" aria-hidden="true" tabindex="-1"></a>A basic decision rule is if $Pr(y=\text{Modern Contraception} |X) &gt;.5$ Then classify the observation as a modern contraception user, and otherwise not. This is what we will use here.</span>
+<span id="cb55-122"><a href="#cb55-122" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-123"><a href="#cb55-123" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-126"><a href="#cb55-126" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb55-127"><a href="#cb55-127" aria-hidden="true" tabindex="-1"></a>tr_predcl<span class="ot">&lt;-</span><span class="fu">factor</span>(<span class="fu">ifelse</span>(tr_pred<span class="sc">&gt;</span>.<span class="dv">5</span>, <span class="dv">1</span>, <span class="dv">0</span>))</span>
+<span id="cb55-128"><a href="#cb55-128" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-129"><a href="#cb55-129" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb55-130"><a href="#cb55-130" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-131"><a href="#cb55-131" aria-hidden="true" tabindex="-1"></a>pred1<span class="ot">&lt;-</span><span class="fu">data.frame</span>(<span class="at">pr=</span>tr_pred, <span class="at">gr=</span>tr_predcl, <span class="at">modcon=</span>model.dat2train<span class="sc">$</span>modcontra)</span>
+<span id="cb55-132"><a href="#cb55-132" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-133"><a href="#cb55-133" aria-hidden="true" tabindex="-1"></a>pred1<span class="sc">%&gt;%</span></span>
+<span id="cb55-134"><a href="#cb55-134" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>()<span class="sc">+</span><span class="fu">geom_density</span>(<span class="fu">aes</span>(<span class="at">x=</span>pr, <span class="at">color=</span>gr, <span class="at">group=</span>gr))<span class="sc">+</span><span class="fu">ggtitle</span>(<span class="at">label =</span> <span class="st">"Probability of Modern Contraception"</span>, <span class="at">subtitle =</span> <span class="st">"Threshold = .5"</span>)</span>
+<span id="cb55-135"><a href="#cb55-135" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-136"><a href="#cb55-136" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-137"><a href="#cb55-137" aria-hidden="true" tabindex="-1"></a>pred1<span class="sc">%&gt;%</span></span>
+<span id="cb55-138"><a href="#cb55-138" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>()<span class="sc">+</span><span class="fu">geom_density</span>(<span class="fu">aes</span>(<span class="at">x=</span>pr, <span class="at">color=</span>modcon, <span class="at">group=</span>modcon))<span class="sc">+</span><span class="fu">ggtitle</span>(<span class="at">label =</span> <span class="st">"Probability of Modern Contraception"</span>, <span class="at">subtitle =</span> <span class="st">"Truth"</span>)</span>
+<span id="cb55-139"><a href="#cb55-139" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-140"><a href="#cb55-140" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb55-141"><a href="#cb55-141" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-142"><a href="#cb55-142" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-143"><a href="#cb55-143" aria-hidden="true" tabindex="-1"></a>Next we need to see how we did. A simple cross tab of the observed classes versus the predicted classes is called the **confusion matrix**.</span>
+<span id="cb55-144"><a href="#cb55-144" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-147"><a href="#cb55-147" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb55-148"><a href="#cb55-148" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>( tr_predcl,model.dat2train<span class="sc">$</span>modcontra)</span>
+<span id="cb55-149"><a href="#cb55-149" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb55-150"><a href="#cb55-150" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-151"><a href="#cb55-151" aria-hidden="true" tabindex="-1"></a>This is great, but typically it's easier to understand the model's predictive ability by converting these to proportions. The <span class="in">`confusionMatrix()`</span> function in <span class="in">`caret`</span> can do this, plus other stuff.</span>
+<span id="cb55-152"><a href="#cb55-152" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-153"><a href="#cb55-153" aria-hidden="true" tabindex="-1"></a>This provides lots of output summarizing the classification results. At its core is the matrix of observed classes versus predicted classes. The confusion matrix maps observed classes versus predicted classes:</span>
+<span id="cb55-154"><a href="#cb55-154" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-155"><a href="#cb55-155" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> <span class="pp">|</span> Predicted Negative <span class="pp">|</span> Predicted Positive <span class="pp">|</span></span>
+<span id="cb55-156"><a href="#cb55-156" aria-hidden="true" tabindex="-1"></a><span class="pp">|---|---|---|</span></span>
+<span id="cb55-157"><a href="#cb55-157" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **Actual Negative** <span class="pp">|</span> True Negative (TN) <span class="pp">|</span> False Positive (FP) <span class="pp">|</span></span>
+<span id="cb55-158"><a href="#cb55-158" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **Actual Positive** <span class="pp">|</span> False Negative (FN) <span class="pp">|</span> True Positive (TP) <span class="pp">|</span></span>
+<span id="cb55-159"><a href="#cb55-159" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-160"><a href="#cb55-160" aria-hidden="true" tabindex="-1"></a>Lots of information on the predictive accuracy can be found from this 2x2 table. Generally, we are interested in overall accuracy, sensitivity and specificity.</span>
+<span id="cb55-161"><a href="#cb55-161" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-162"><a href="#cb55-162" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-163"><a href="#cb55-163" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-166"><a href="#cb55-166" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb55-167"><a href="#cb55-167" aria-hidden="true" tabindex="-1"></a><span class="fu">confusionMatrix</span>(<span class="at">data =</span> tr_predcl,model.dat2train<span class="sc">$</span>modcontra )</span>
+<span id="cb55-168"><a href="#cb55-168" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb55-169"><a href="#cb55-169" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-170"><a href="#cb55-170" aria-hidden="true" tabindex="-1"></a>Overall the model has a 73.9% accuracy, which isn't bad! What is bad is some of the other measures. The sensitivity is really low <span class="in">` 267/(267+1142) = .189`</span>, so we are only predicting the positive class (modern contraception) in 19% of cases correctly. In other word the model is pretty good at predicting if you don't use modern contraception, <span class="in">`3761/(3761+275)= .931`</span>, but not at predicting if you do.</span>
+<span id="cb55-171"><a href="#cb55-171" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-172"><a href="#cb55-172" aria-hidden="true" tabindex="-1"></a>We could try a different decision rule, in this case, I use the mean of the response as the cutoff value.</span>
+<span id="cb55-173"><a href="#cb55-173" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-176"><a href="#cb55-176" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb55-177"><a href="#cb55-177" aria-hidden="true" tabindex="-1"></a>tr_predcl<span class="ot">&lt;-</span><span class="fu">factor</span>(<span class="fu">ifelse</span>(tr_pred<span class="sc">&gt;</span>.<span class="dv">258</span>, <span class="dv">1</span>, <span class="dv">0</span>)) <span class="co">#mean of response</span></span>
+<span id="cb55-178"><a href="#cb55-178" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-179"><a href="#cb55-179" aria-hidden="true" tabindex="-1"></a>pred2<span class="ot">&lt;-</span><span class="fu">data.frame</span>(<span class="at">pr=</span>tr_pred, <span class="at">gr=</span>tr_predcl, <span class="at">modcon=</span>model.dat2train<span class="sc">$</span>modcontra)</span>
+<span id="cb55-180"><a href="#cb55-180" aria-hidden="true" tabindex="-1"></a>pred2<span class="sc">%&gt;%</span></span>
+<span id="cb55-181"><a href="#cb55-181" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>()<span class="sc">+</span><span class="fu">geom_density</span>(<span class="fu">aes</span>(<span class="at">x=</span>pr, <span class="at">color=</span>gr, <span class="at">group=</span>gr))<span class="sc">+</span><span class="fu">ggtitle</span>(<span class="at">label =</span> <span class="st">"Probability of Modern Contraception"</span>, <span class="at">subtitle =</span> <span class="st">"Threshold = .258"</span>)</span>
+<span id="cb55-182"><a href="#cb55-182" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-183"><a href="#cb55-183" aria-hidden="true" tabindex="-1"></a>pred2<span class="sc">%&gt;%</span></span>
+<span id="cb55-184"><a href="#cb55-184" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>()<span class="sc">+</span><span class="fu">geom_density</span>(<span class="fu">aes</span>(<span class="at">x=</span>pr, <span class="at">color=</span>modcon, <span class="at">group=</span>modcon))<span class="sc">+</span><span class="fu">ggtitle</span>(<span class="at">label =</span> <span class="st">"Probability of Modern Contraception"</span>, <span class="at">subtitle =</span> <span class="st">"Truth"</span>)</span>
+<span id="cb55-185"><a href="#cb55-185" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-186"><a href="#cb55-186" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-187"><a href="#cb55-187" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-188"><a href="#cb55-188" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb55-189"><a href="#cb55-189" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-190"><a href="#cb55-190" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-193"><a href="#cb55-193" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb55-194"><a href="#cb55-194" aria-hidden="true" tabindex="-1"></a><span class="fu">confusionMatrix</span>(<span class="at">data =</span> tr_predcl,model.dat2train<span class="sc">$</span>modcontra, <span class="at">positive =</span> <span class="st">"1"</span> )</span>
+<span id="cb55-195"><a href="#cb55-195" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-196"><a href="#cb55-196" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb55-197"><a href="#cb55-197" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-198"><a href="#cb55-198" aria-hidden="true" tabindex="-1"></a>Which drops the accuracy a little, but increases the specificity at the cost of the sensitivity.</span>
+<span id="cb55-199"><a href="#cb55-199" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-200"><a href="#cb55-200" aria-hidden="true" tabindex="-1"></a>Next we do this on the test set to evaluate model performance outside of the training data</span>
+<span id="cb55-201"><a href="#cb55-201" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-204"><a href="#cb55-204" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb55-205"><a href="#cb55-205" aria-hidden="true" tabindex="-1"></a>pred_test<span class="ot">&lt;-</span><span class="fu">predict</span>(glm1, <span class="at">newdata=</span>model.dat2test, <span class="at">type=</span><span class="st">"response"</span>)</span>
+<span id="cb55-206"><a href="#cb55-206" aria-hidden="true" tabindex="-1"></a>pred_cl<span class="ot">&lt;-</span><span class="fu">factor</span>(<span class="fu">ifelse</span>(pred_test<span class="sc">&gt;</span>.<span class="dv">28</span>, <span class="dv">1</span>, <span class="dv">0</span>))</span>
+<span id="cb55-207"><a href="#cb55-207" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-208"><a href="#cb55-208" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(model.dat2test<span class="sc">$</span>modcontra,pred_cl)</span>
+<span id="cb55-209"><a href="#cb55-209" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-210"><a href="#cb55-210" aria-hidden="true" tabindex="-1"></a><span class="fu">confusionMatrix</span>(<span class="at">data =</span> pred_cl,model.dat2test<span class="sc">$</span>modcontra )</span>
+<span id="cb55-211"><a href="#cb55-211" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-212"><a href="#cb55-212" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb55-213"><a href="#cb55-213" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-214"><a href="#cb55-214" aria-hidden="true" tabindex="-1"></a><span class="fu">## Regression partition tree</span></span>
+<span id="cb55-215"><a href="#cb55-215" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-216"><a href="#cb55-216" aria-hidden="true" tabindex="-1"></a>As we saw in the first working group example, the regression tree is another common technique used in classification problems. Regression or classification trees attempt to find optimal splits in the data that maximize classification accuracy.</span>
+<span id="cb55-217"><a href="#cb55-217" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-220"><a href="#cb55-220" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb55-221"><a href="#cb55-221" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rpart)</span>
+<span id="cb55-222"><a href="#cb55-222" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rpart.plot)</span>
+<span id="cb55-223"><a href="#cb55-223" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-224"><a href="#cb55-224" aria-hidden="true" tabindex="-1"></a>rp1<span class="ot">&lt;-</span><span class="fu">rpart</span>(modcontra<span class="sc">~</span><span class="fu">factor</span>(region)<span class="sc">+</span>(age)<span class="sc">+</span>livchildren<span class="sc">+</span><span class="fu">factor</span>(educ),</span>
+<span id="cb55-225"><a href="#cb55-225" aria-hidden="true" tabindex="-1"></a>           <span class="at">data=</span>model.dat2train,</span>
+<span id="cb55-226"><a href="#cb55-226" aria-hidden="true" tabindex="-1"></a>           <span class="at">method =</span><span class="st">"class"</span>,</span>
+<span id="cb55-227"><a href="#cb55-227" aria-hidden="true" tabindex="-1"></a>           <span class="at">control =</span> <span class="fu">rpart.control</span>(<span class="at">minbucket =</span> <span class="dv">10</span>, <span class="at">cp=</span>.<span class="dv">01</span>)) <span class="co">#lower CP parameter makes for more complicated tree</span></span>
+<span id="cb55-228"><a href="#cb55-228" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(rp1)</span>
+<span id="cb55-229"><a href="#cb55-229" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-230"><a href="#cb55-230" aria-hidden="true" tabindex="-1"></a><span class="fu">rpart.plot</span>(rp1, <span class="at">type =</span> <span class="dv">4</span>,<span class="at">extra=</span><span class="dv">4</span>,</span>
+<span id="cb55-231"><a href="#cb55-231" aria-hidden="true" tabindex="-1"></a><span class="at">box.palette=</span><span class="st">"GnBu"</span>,</span>
+<span id="cb55-232"><a href="#cb55-232" aria-hidden="true" tabindex="-1"></a><span class="at">shadow.col=</span><span class="st">"gray"</span>,</span>
+<span id="cb55-233"><a href="#cb55-233" aria-hidden="true" tabindex="-1"></a><span class="at">nn=</span><span class="cn">TRUE</span>, <span class="at">main=</span><span class="st">"Classification tree for using modern contraception"</span>)</span>
+<span id="cb55-234"><a href="#cb55-234" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb55-235"><a href="#cb55-235" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-236"><a href="#cb55-236" aria-hidden="true" tabindex="-1"></a>Each node box displays the classification, the probability of each class at that node (i.e. the probability of the class conditioned on the node) and the percentage of observations used at that node. <span class="co">[</span><span class="ot">From here</span><span class="co">](https://blog.revolutionanalytics.com/2013/06/plotting-classification-and-regression-trees-with-plotrpart.html)</span>.</span>
+<span id="cb55-237"><a href="#cb55-237" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-238"><a href="#cb55-238" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-241"><a href="#cb55-241" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb55-242"><a href="#cb55-242" aria-hidden="true" tabindex="-1"></a>predrp1<span class="ot">&lt;-</span><span class="fu">predict</span>(rp1, <span class="at">newdata=</span>model.dat2train, <span class="at">type =</span> <span class="st">"class"</span>)</span>
+<span id="cb55-243"><a href="#cb55-243" aria-hidden="true" tabindex="-1"></a><span class="fu">confusionMatrix</span>(<span class="at">data =</span> predrp1,model.dat2train<span class="sc">$</span>modcontra )</span>
+<span id="cb55-244"><a href="#cb55-244" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-245"><a href="#cb55-245" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb55-246"><a href="#cb55-246" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-247"><a href="#cb55-247" aria-hidden="true" tabindex="-1"></a>We see the regression tree is performing a little better than the logistic regression on the test case using the summary below:</span>
+<span id="cb55-248"><a href="#cb55-248" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-251"><a href="#cb55-251" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb55-252"><a href="#cb55-252" aria-hidden="true" tabindex="-1"></a>pred_testrp<span class="ot">&lt;-</span><span class="fu">predict</span>(rp1, <span class="at">newdata=</span>model.dat2test, <span class="at">type=</span><span class="st">"class"</span>)</span>
+<span id="cb55-253"><a href="#cb55-253" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-254"><a href="#cb55-254" aria-hidden="true" tabindex="-1"></a><span class="fu">confusionMatrix</span>(<span class="at">data =</span> pred_testrp,model.dat2test<span class="sc">$</span>modcontra )</span>
+<span id="cb55-255"><a href="#cb55-255" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-256"><a href="#cb55-256" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb55-257"><a href="#cb55-257" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-258"><a href="#cb55-258" aria-hidden="true" tabindex="-1"></a><span class="fu">## Linear discriminant function</span></span>
+<span id="cb55-259"><a href="#cb55-259" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-260"><a href="#cb55-260" aria-hidden="true" tabindex="-1"></a>Linear discriminant functions attempt to separate classes from each other using a strictly linear function of the variables. It attempts to reduce the dimensionality of the original data to a single linear function of the input variables, or the *discriminant function*. This is very similar to what PCA does when it creates a principal component, although in LDA, the function uses this linear transformation of the data to optimally separate classes.</span>
+<span id="cb55-261"><a href="#cb55-261" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-262"><a href="#cb55-262" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-263"><a href="#cb55-263" aria-hidden="true" tabindex="-1"></a>In this case it performs better than the logistic regression but not as well as the regression tree.</span>
+<span id="cb55-264"><a href="#cb55-264" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-267"><a href="#cb55-267" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb55-268"><a href="#cb55-268" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
+<span id="cb55-269"><a href="#cb55-269" aria-hidden="true" tabindex="-1"></a>lda1<span class="ot">&lt;-</span><span class="fu">lda</span>(modcontra<span class="sc">~</span><span class="fu">factor</span>(region)<span class="sc">+</span><span class="fu">scale</span>(age)<span class="sc">+</span>livchildren<span class="sc">+</span><span class="fu">factor</span>(educ), <span class="at">data=</span>model.dat2train,<span class="at">prior=</span><span class="fu">c</span>(.<span class="dv">74</span>, .<span class="dv">26</span>) , <span class="at">CV=</span>T)</span>
+<span id="cb55-270"><a href="#cb55-270" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-271"><a href="#cb55-271" aria-hidden="true" tabindex="-1"></a>pred_ld1<span class="ot">&lt;-</span>lda1<span class="sc">$</span>class</span>
+<span id="cb55-272"><a href="#cb55-272" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(lda1<span class="sc">$</span>posterior) <span class="co">#probabilities of membership in each group</span></span>
+<span id="cb55-273"><a href="#cb55-273" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-274"><a href="#cb55-274" aria-hidden="true" tabindex="-1"></a>ld1<span class="ot">&lt;-</span><span class="fu">data.frame</span>(<span class="at">ppmod=</span> lda1<span class="sc">$</span>posterior[, <span class="dv">2</span>],<span class="at">pred=</span>lda1<span class="sc">$</span>class, <span class="at">real=</span>model.dat2train<span class="sc">$</span>modcontra)</span>
+<span id="cb55-275"><a href="#cb55-275" aria-hidden="true" tabindex="-1"></a>ld1<span class="sc">%&gt;%</span></span>
+<span id="cb55-276"><a href="#cb55-276" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>()<span class="sc">+</span><span class="fu">geom_density</span>(<span class="fu">aes</span>(<span class="at">x=</span>ppmod, <span class="at">group=</span>pred, <span class="at">color=</span>pred))<span class="sc">+</span><span class="fu">ggtitle</span>(<span class="at">label =</span> <span class="st">"Probabilities of class membership on the linear discriminant function"</span>)</span>
+<span id="cb55-277"><a href="#cb55-277" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-278"><a href="#cb55-278" aria-hidden="true" tabindex="-1"></a>ld1<span class="sc">%&gt;%</span></span>
+<span id="cb55-279"><a href="#cb55-279" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>()<span class="sc">+</span><span class="fu">geom_density</span>(<span class="fu">aes</span>(<span class="at">x=</span>ppmod, <span class="at">group=</span>real, <span class="at">color=</span>real))<span class="sc">+</span><span class="fu">ggtitle</span>(<span class="at">label =</span> <span class="st">"Probabilities of class membership and the real class"</span>)</span>
+<span id="cb55-280"><a href="#cb55-280" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb55-281"><a href="#cb55-281" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-282"><a href="#cb55-282" aria-hidden="true" tabindex="-1"></a>Accuracy on the training set</span>
+<span id="cb55-285"><a href="#cb55-285" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb55-286"><a href="#cb55-286" aria-hidden="true" tabindex="-1"></a><span class="fu">confusionMatrix</span>(pred_ld1,model.dat2train<span class="sc">$</span>modcontra )</span>
+<span id="cb55-287"><a href="#cb55-287" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-288"><a href="#cb55-288" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-289"><a href="#cb55-289" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb55-290"><a href="#cb55-290" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-291"><a href="#cb55-291" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-294"><a href="#cb55-294" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb55-295"><a href="#cb55-295" aria-hidden="true" tabindex="-1"></a>lda1<span class="ot">&lt;-</span><span class="fu">lda</span>(modcontra<span class="sc">~</span><span class="fu">factor</span>(region)<span class="sc">+</span><span class="fu">scale</span>(age)<span class="sc">+</span>livchildren<span class="sc">+</span><span class="fu">factor</span>(educ), <span class="at">data=</span>model.dat2train,<span class="at">prior=</span><span class="fu">c</span>(.<span class="dv">74</span>, .<span class="dv">26</span>) )</span>
+<span id="cb55-296"><a href="#cb55-296" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-297"><a href="#cb55-297" aria-hidden="true" tabindex="-1"></a><span class="co">#linear discriminant function</span></span>
+<span id="cb55-298"><a href="#cb55-298" aria-hidden="true" tabindex="-1"></a>lda1<span class="sc">$</span>scaling</span>
+<span id="cb55-299"><a href="#cb55-299" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb55-300"><a href="#cb55-300" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-301"><a href="#cb55-301" aria-hidden="true" tabindex="-1"></a>Accuracy on the test set</span>
+<span id="cb55-304"><a href="#cb55-304" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb55-305"><a href="#cb55-305" aria-hidden="true" tabindex="-1"></a>pred_ld2<span class="ot">&lt;-</span><span class="fu">predict</span>(lda1, model.dat2test)</span>
+<span id="cb55-306"><a href="#cb55-306" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-307"><a href="#cb55-307" aria-hidden="true" tabindex="-1"></a><span class="fu">confusionMatrix</span>(pred_ld2<span class="sc">$</span>class, model.dat2test<span class="sc">$</span>modcontra)</span>
+<span id="cb55-308"><a href="#cb55-308" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-309"><a href="#cb55-309" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+</code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Predictive Modeling and Quantitative Methods in Demography by Corey Sparks</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/coreysparks/predictive_modeling/edit/main/basic-classification.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/coreysparks/predictive_modeling/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<p>Built with <a href="https://quarto.org/">Quarto</a></p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
