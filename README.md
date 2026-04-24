@@ -119,8 +119,6 @@ Examples use publicly available data:
 ## Author
 
 **Corey Sparks, PhD**  
-Professor, Department of Demography  
-University of Texas at San Antonio (UTSA)
 
 ## License
 
